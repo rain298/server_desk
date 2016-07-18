@@ -1,0 +1,220 @@
+<openerp>
+    <data>
+        <record model="workflow" id="wkf_server_desk_case">
+            <field name="name">Server Desk workflow</field>
+            <field name="osv">server_desk.case</field>
+            <field name="on_create">True</field>
+        </record>
+
+        <record model="workflow.activity" id="server_desk_new">
+            <field name="name">new</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="flow_start" eval="True"/>
+            <field name="kind">function</field>
+            <field name="action">action_new()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_cds">
+            <field name="name">cds</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_cds()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_tac1">
+            <field name="name">tac1</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_tac1()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_tac2">
+            <field name="name">tac2</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_tac2()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_master">
+            <field name="name">master</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_master()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_audit">
+            <field name="name">audit</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_audit()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_done">
+            <field name="name">done</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="flow_stop" eval="True"/>
+            <field name="kind">function</field>
+            <field name="action">action_done()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_oem">
+            <field name="name">oem</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_oem()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_back_tac1">
+            <field name="name">back_tac1</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_customer_feedback_to_tac1()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_back_tac2">
+            <field name="name">back_tac2</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_customer_feedback_to_tac2()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_back_master">
+            <field name="name">back_master</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_customer_feedback_to_master()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_back_oem">
+            <field name="name">back_oem</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_customer_feedback_to_oem()</field>
+        </record>
+        <record model="workflow.activity" id="server_desk_customer_feedback">
+            <field name="name">customer_feedback</field>
+            <field name="wkf_id" ref="wkf_server_desk_case" />
+            <field name="kind">function</field>
+            <field name="action">action_customer_feedback()</field>
+        </record>
+
+        <record model="workflow.transition" id="server_desk_case_new_to_cds">
+            <field name="act_from" ref="server_desk_new" />
+            <field name="act_to" ref="server_desk_cds"/>
+            <field name="group_id" ref="base.group_server_desk_partner" />
+            <field name="signal">set_to_cds</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_new_to_tac1">
+            <field name="act_from" ref="server_desk_new" />
+            <field name="act_to" ref="server_desk_tac1"/>
+            <field name="group_id" ref="base.group_server_desk_cds" />
+            <field name="signal">set_to_tac1</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_cds_to_tac1">
+            <field name="act_from" ref="server_desk_cds" />
+            <field name="act_to" ref="server_desk_tac1"/>
+            <field name="group_id" ref="base.group_server_desk_cds" />
+            <field name="signal">set_to_tac1</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_customer_feedback_to_tac2">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_tac2"/>
+            <field name="group_id" ref="base.group_server_desk_tac1" />
+            <field name="signal">set_to_tac2</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_customer_feedback_to_master">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_master" />
+            <field name="group_id" ref="base.group_server_desk_tac2" />
+            <field name="signal">set_to_master</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_customer_feedback_to_oem">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_oem" />
+            <field name="group_id" ref="base.group_server_desk_master" />
+            <field name="signal">set_to_oem</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_oem_to_customer_feedback">
+            <field name="act_from" ref="server_desk_oem" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_tac1" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_master_to_customer_feedback">
+            <field name="act_from" ref="server_desk_master" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_master" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_tac2_to_customer_feedback">
+            <field name="act_from" ref="server_desk_tac2" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_tac2" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_tac1_to_customer_feedback">
+            <field name="act_from" ref="server_desk_tac1" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_tac1" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_audit_to_customer_feedback">
+            <field name="act_from" ref="server_desk_audit" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_product_manager" />
+            <field name="signal">set_to_customer_feedback1</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_customer_feedback_to_audit">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_audit" />
+            <field name="signal">set_to_audit</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_customer_feedback_to_tac1">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_back_tac1" />
+            <field name="condition">judge_tac1()</field>
+            <field name="group_id" ref="base.group_server_desk_tac1" />
+            <field name="signal">set_to_past</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_customer_feedback_to_tac2">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_back_tac2" />
+            <field name="condition">judge_tac2()</field>
+            <field name="group_id" ref="base.group_server_desk_tac2" />
+            <field name="signal">set_to_past</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_customer_feedback_to_master">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_back_master" />
+            <field name="condition">judge_master()</field>
+            <field name="group_id" ref="base.group_server_desk_master" />
+            <field name="signal">set_to_past</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_customer_feedback_to_oem">
+            <field name="act_from" ref="server_desk_customer_feedback" />
+            <field name="act_to" ref="server_desk_back_oem" />
+            <field name="condition">judge_oem()</field>
+            <field name="group_id" ref="base.group_server_desk_tac1" />
+            <field name="signal">set_to_past</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_oem_to_customer_feedback">
+            <field name="act_from" ref="server_desk_back_oem" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_tac1" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_master_to_customer_feedback">
+            <field name="act_from" ref="server_desk_back_master" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_master" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_tac2_to_customer_feedback">
+            <field name="act_from" ref="server_desk_back_tac2" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_tac2" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_back_tac1_to_customer_feedback">
+            <field name="act_from" ref="server_desk_back_tac1" />
+            <field name="act_to" ref="server_desk_customer_feedback" />
+            <field name="group_id" ref="base.group_server_desk_tac1" />
+            <field name="signal">set_to_customer_feedback</field>
+        </record>
+        <record model="workflow.transition" id="server_desk_case_audit_to_done">
+            <field name="act_from" ref="server_desk_audit" />
+            <field name="act_to" ref="server_desk_done" />
+            <field name="group_id" ref="base.group_server_desk_product_manager" />
+            <field name="signal">set_to_done</field>
+        </record>
+    </data>
+</openerp>

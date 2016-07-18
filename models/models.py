@@ -1,0 +1,389 @@
+﻿# -*- coding: utf-8 -*-
+from openerp import tools
+from openerp import models, fields, api,exceptions
+from email.utils import formataddr
+import email
+from email.header import Header
+class server_desk(models.Model):
+    _name = 'server_desk.server_desk'
+
+    name = fields.Char()
+
+class Cco(models.Model):
+    _name ='server_desk.cco_account'
+    _rec_name = 'account'
+
+    account = fields.Char(required=True)
+    passward = fields.Char(required=True)
+
+class equipment(models.Model):
+    _name ='server_desk.equipment'
+    _rec_name = 'SN'
+
+    SN = fields.Char(required=True,string="SERIAL NUMBER / PAK NUMBER") #序列号
+    contract = fields.Many2one('server_desk.contract', string="CONTRACT NUMBER") #合同号 
+    server_level = fields.Char(string="SERVICE LEVEL") #服务级别
+    company = fields.Char(string="BILL TO NAME") #公司名称
+    customer = fields.Char(string="SITE NAME") #客户名称
+    product = fields.Char(string="PRODUCT NUMBER") #产品型号
+    product_relationship = fields.Char(string="PRODUCT RELATIONSHIP") #产品相互关系
+    description  = fields.Char(string="DESCRIPTION") #产品描述
+    begin_date = fields.Date(string="BEGIN DATE") #维保开始日期
+    end_date = fields.Date(string="END DATE") #维保结束日期
+    last_date_of_support = fields.Date(string="LAST DATE OF SUPPORT") #EOS日期
+    product_ship_date = fields.Date(string="PRODUCT SHIP DATE") #产品发货日期
+class Contract(models.Model):
+    _name ='server_desk.contract'
+    _rec_name = 'contract_id'
+
+    contract_id = fields.Char(required=True)
+    start_time = fields.Date()
+    stop_time = fields.Date()
+    serivce_category1 = fields.Char()
+    serivce_category2 = fields.Char()
+    sow = fields.Text()
+    serivce_level = fields.Char()
+    cco = fields.Many2one('server_desk.cco_account', string="cco")
+
+class Case(models.Model):
+    _name ='server_desk.case'
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
+    _mail_post_access = 'read'
+    _rec_name = 'case_id'
+    _track = {
+        'state':{
+            'server_desk.case_cds':lambda self, cr, uid, obj, ctx=None: obj.state and obj.state == 'cds',
+            'server_desk.case_state':lambda self, cr, uid, obj, ctx=None: obj.state and obj.state != 'cds',
+            },
+    }
+    case_id = fields.Char(required=True)
+    applicant_id = fields.Many2one('res.users', string="申请人",required=True,default=lambda self: self.env.user)
+    applicant_way = fields.Char(string="申请方式",default=lambda self: self._get_app_way_def())
+    customer_id = fields.Many2one('res.partner', string="客户",required=True)
+    SN = fields.Char(string="SN",required = True)
+    contract_id = fields.Many2one('server_desk.contract',string="合同",computed="_verify_contract_id",store=True,readonly=1)
+    product = fields.Char(string="产品型号",readonly=1,computed="_verify_contract_id",store=True)
+    case_type = fields.Selection([('Technology diagnosis','技术诊断'),('Technical consulting','技术咨询'),('RMA','RMA'),('DOA','DOA'),('standby','standby')],default='Technology diagnosis',string="case类型",required=True)
+    case_level = fields.Selection([('level1','1级故障'),('level2','2级故障'),('level3','3级故障'),('level4','4级故障')],default='level1')
+    case_type_note = fields.Text(string="case类型说明")
+    user_id = fields.Many2one('res.users', string="当前处理人")
+    cds_id = fields.Many2one('res.users', string="服务台处理人")
+    tac1_id = fields.Many2one('res.users', string="TAC1处理人")
+    tac2_id = fields.Many2one('res.users', string="TAC2处理人")
+    master_id = fields.Many2one('res.users', string="专家处理人")
+    product_id = fields.Many2one('res.users', string="产品经理")
+    group_id = fields.Many2one('res.groups',string="当前处理组",domain =[('group_id','in','self.groups_id')] )
+    note = fields.Text(string="备注")
+    state = fields.Selection([
+        ('new',"新建case"),
+        ('cds',"坐席处理"),
+        ('tac1',"TAC一线处理"),
+        ('tac2',"TAC二线线处理"),
+        ('master',"专家处理"),
+        ('oem',"厂商处理"),
+        ('customer_feedback',"客户反馈"),
+        ('audit',"审核"),
+        ('done',"关闭"),
+    ],default='new',string="状态",ack_visibility='onchange')
+    error_description = fields.Text(string="故障描述",required=True)
+    error_log = fields.Text()
+    customer_feedback = fields.Text(string="客户反馈")
+    feedback_ids = fields.One2many('server_desk.feedback', 'case_id', string="处理过程")
+    contact_user = fields.Char(string="故障联系人",required=True)
+    contact_user_phone = fields.Char(string="联系电话",required=True)
+    preemption = fields.Integer(default=0)
+    priority = fields.Char(default="高优先级")
+    close_date = fields.Datetime(string="关闭时间")
+    case_title=fields.Char(string='case标题')
+    case_oem_no=fields.Char(string='厂商case编号')
+    start_time =fields.Datetime(string="开始时间")
+    end_time = fields.Datetime(string="结束时间")
+
+    @api.model
+    def _get_app_way_def(self):
+        if self.env['res.groups'].search([('name', '=', 'cds_group'), ('category_id.name', '=', 'Server Desk')],limit=1) in self.env.user.groups_id:
+            return "电话"
+        return "Web"
+
+    @api.onchange('SN')
+    def _verify_contract_id(self):
+        if self.SN:
+            equipment=self.env['server_desk.equipment'].search([('SN','=',self.SN)])
+            if equipment:
+                if equipment[0].contract in self.env['server_desk.contract'].search([]):
+                    self.contract_id = equipment[0].contract
+                    self.product = equipment[0].product
+            else:
+                raise exceptions.ValidationError('SN号不存在或已过保')
+    @api.one
+    def _compute_applicant_way(self):
+        if  self.env['res.groups'].search([('name','=','cds_group')]) in self.env.user.groups_id:
+            self.applicant_way = 'phone'
+        else:
+            self.applicant_way = 'WEB'
+
+    def send_email(self,cr,uid,users,context=None):
+            template_model = self.pool.get('email.template')
+            ids = template_model.search(cr,uid,[('name','=','case邮件提醒')],context=None)
+            template = template_model.browse(cr,uid,ids,context=None)
+            to_list = []
+            for user in users:
+                to_list.append(formataddr((Header(user.name,'utf-8').encode(),user.email)))
+            mail_mail = self.pool.get('mail.mail')
+            mail_id = mail_mail.create(cr, uid, {
+                            'body_html': '<div><p>Hello,</p>'
+                                '<p>The following email sent to  cannot be accepted because this is '
+                                'a private email address. Only allowed people can contact us at this address.</p></div>'
+                                '<blockquote>%s</blockquote>' % template[0].body_html,
+                            'subject': 'Re: %s' % template[0].subject.encode('utf-8'),
+                            'email_to': to_list,
+                            'auto_delete': True,
+                        }, context=context)
+            mail_mail.send(cr, uid, [mail_id], context=context)
+
+    ### load balance the request 
+    @api.multi
+    def _load_balance(self,group,method=None):
+        system_obj = self.env['server_desk.system'].search([('name','=','system')],limit=1)
+        i = getattr(system_obj,group)
+        group_users = self.env['res.groups'].search([('name','=',group)]).users
+        if i == 0:
+            self.env['server_desk.system'].search([('name','=','system')]).write({group:len(group_users)})
+            i = getattr(system_obj,group)
+        try:
+            self.user_id = group_users[i-1]
+        except:
+            self.env['server_desk.system'].search([('name','=','system')]).write({group:len(group_users)})
+            i = getattr(system_obj,group)
+            self.user_id = group_users[i-1]
+        self.env['server_desk.system'].search([('name','=','system')]).write({group:i-1})
+
+    @api.multi
+    def judge_deal(self):
+        for feedback in self.feedback_ids:
+            if feedback.processor_id == self.env.user and feedback.record:
+                return True
+        return False
+    @api.multi
+    def judge_feedback(self):
+        for feedback in self.feedback_ids:
+            if feedback.processor_id == self.env.user and feedback.feedback_user_id == self.env.user and not feedback.result:
+                return False
+            if feedback.processor_id == self.env.user and feedback.feedback_user_id == self.env.user and not feedback.note:
+                return False
+        return True
+    @api.multi
+    def action_cds(self):
+        self.state = 'cds'
+        recs = self.env['res.groups'].search([('name','=','cds_group')])
+        self.group_id = recs[0] 
+        ### load balance the request to tac1 and achieve session hold
+        if not self.cds_id:
+            self._load_balance('cds_group')
+            self.cds_id = self.user_id
+            # 添加任务处理人为关注者
+            self.message_subscribe([self.cds_id.partner_id.id])
+        self.send_email([self.cds_id])
+        #self.user_id = self.env['res.groups'].search([('name','=','cds_group')]).users[0]
+
+    @api.multi
+    def action_new(self):
+        self.state = 'new'
+        self.user_id = self.env.uid
+    @api.multi
+    def action_tac1(self,subtype_ids=None):
+        recs = self.env['res.groups'].search([('name','=','tac1_group')])
+        self.group_id = recs[0] 
+        ### load balance the request to tac1 and achieve session hold
+        if not self.tac1_id:
+            self._load_balance('tac1_group')
+            self.tac1_id = self.user_id
+            # 添加任务处理人为关注者
+            self.message_subscribe([self.tac1_id.partner_id.id])
+        if not self.case_oem_no:
+            raise exceptions.ValidationError('请填写case厂家编号')
+        self.send_email([self.tac1_id])
+        self.state = 'tac1'
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+
+    @api.multi
+    def action_tac2(self):
+        if not self.judge_deal():
+            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+        recs = self.env['res.groups'].search([('name','=','tac2_group')])
+        self.group_id = recs[0] 
+        ### load balance the request to tac2 and achieve session hold
+        if not self.tac2_id:
+            self._load_balance('tac2_group')
+            self.tac2_id = self.user_id
+            # 添加任务处理人为关注者
+            self.message_subscribe([self.tac2_id.partner_id.id])
+        self.send_email([self.tac2_id])
+        self.state = 'tac2'
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+
+    @api.multi
+    def action_master(self):
+        if not self.judge_deal():
+            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+        recs = self.env['res.groups'].search([('name','=','master_group')])
+        self.group_id = recs[0]
+        ### load balance the request to master and achieve session hold
+        if not self.master_id:
+            self._load_balance('master_group')
+            self.master_id = self.user_id
+            # 添加任务处理人为关注者
+            self.message_subscribe([self.master_id.partner_id.id])
+        self.send_email([self.master_id])
+        self.state = 'master'
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+
+    @api.multi
+    def action_done(self):
+        self.state = 'done'
+        self.close_date = fields.datetime.now()
+    @api.multi
+    def action_oem(self):
+        if not self.judge_deal():
+            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+        self.state = 'oem'
+        recs = self.env['res.groups'].search([('name','=','tac1_group')])
+        self.group_id = recs[0]
+        self.user_id = self.tac1_id
+        self.priority = "低优先级"
+        self.feedback_ids.create({'processor_id': self.user_id})
+        
+    @api.multi
+    def action_customer_feedback(self):
+        if not self.judge_deal():
+            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+        self.state = 'customer_feedback'
+        self.user_id = self.env.user
+        for feedback in self.feedback_ids:
+            if feedback.processor_id == self.env.user:
+                feedback.feedback_user_id=self.env.user
+        
+    @api.multi
+    def action_customer_feedback_to_tac1(self):
+        if not self.judge_feedback():
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
+        self.state = 'tac1'
+        self.user_id = self.tac1_id
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+
+    @api.multi
+    def action_customer_feedback_to_tac2(self):
+        if not self.judge_feedback():
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
+        self.state = 'tac2'
+        self.user_id = self.tac2_id
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+
+    @api.multi
+    def action_customer_feedback_to_master(self):
+        if not self.judge_feedback():
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
+        self.state = 'master'
+        self.user_id = self.master_id
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+
+    @api.multi
+    def action_customer_feedback_to_oem(self):
+        if not self.judge_feedback():
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
+        self.state = 'oem'
+        self.user_id = self.tac1_id
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+
+    @api.multi
+    def judge_tac1(self):
+        if self.user_id == self.env.user and self.tac1_id == self.env.user and not self.tac2_id:
+           return True
+        return False
+
+    @api.multi
+    def judge_tac2(self):
+        if self.user_id == self.env.user and self.tac2_id == self.env.user and not self.master_id:
+           return True
+        return False
+
+    @api.multi
+    def judge_master(self):
+        if self.user_id == self.env.user and self.master_id == self.env.user:
+           return True
+        return False
+
+    @api.multi
+    def judge_oem(self):
+        if self.user_id == self.env.user and self.tac1_id == self.env.user and self.master_id:
+           return True
+        return False
+
+    @api.multi
+    def action_audit(self):
+        
+        if not self.solution or not self.error_name:
+            raise exceptions.ValidationError('转产品经理前，请填写解决方案与与故障原因')
+        self.state = 'audit'
+        self.product_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
+        self.user_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
+    
+    def create(self, cr, uid, vals, context=None):
+        dates= fields.Date.today().split('-')
+        date = ''.join(dates)
+        template_model = self.pool.get('server_desk.case')
+        ids = template_model.search(cr,uid,[('case_id','like',date)],context=None)
+        cases = template_model.browse(cr,uid,ids,context=None).sorted(key=lambda r: r.case_id)
+        if vals['case_type'] == 'standby' and not vals['start_time'] and not vals['end_time']:
+            raise exceptions.ValidationError('请填写case开始时间，结束时间，关闭时间')
+        if len(cases):
+            vals['case_id']='C'+str(int(cases[-1].case_id[1:])+1)
+        else:
+            vals['case_id']='C'+date+'001'
+        return super(Case,self).create(cr,uid,vals,context=context)
+        
+class Feedback(models.Model):
+    _name = 'server_desk.feedback'
+
+    processor_id = fields.Many2one('res.users', string="processor")
+    result = fields.Char()
+    record = fields.Text()
+    feedback_user_id = fields.Many2one('res.users',string="feedback_user")
+    note = fields.Text()
+    case_id =  fields.Many2one('server_desk.case', string="case")
+    feedback_time=fields.Datetime(string="反馈时间")
+    
+    #@api.depends()
+    @api.onchange('note','result')
+    def _onchange_feedback_time(self):
+        for record in self:
+            #self.update({'feedback_time':fields.datetime.now()})
+            record.feedback_time = fields.datetime.now()
+class Fault(models.Model):
+    _name = 'server_desk.fault'
+    _rec_name = 'error_name'
+
+    error_log = fields.Char()
+    error_name = fields.Char()
+    device_id = fields.Many2one('server_desk.equipment', string="device")
+    deal_user = fields.Many2one('hr.employee', string="deal_user")
+    description = fields.Text()
+
+class Solution(models.Model):
+    _inherit = 'server_desk.case'
+
+    name = fields.Char()
+    keyword = fields.Text()
+    error_name = fields.Many2one('server_desk.fault', string="error_name")
+    device_id = fields.Many2one('server_desk.equipment', string="device")
+    solution = fields.Text()
+
+class System(models.Model):
+    _name = 'server_desk.system'
+
+    name = fields.Char()
+    tac1_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','tac1_group')]).users))
+    tac2_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','tac2_group')]).users))
+    master_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','master_group')]).users))
+    cds_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','cds_group')]).users))
+

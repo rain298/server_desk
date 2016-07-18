@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+    <data>
+        <record model="ir.actions.act_window" id="server_desk_case_list_action">
+            <field name="name">Case</field>
+            <field name="res_model">server_desk.case</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="server_desk.case_tree_view"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first case
+                </p>
+            </field>
+        </record>
+
+        <record id="action_server_desk_all_case_tree" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="pending_case_tree_view" />
+            <field name="act_window_id" ref="server_desk_case_list_action" />
+        </record>
+        <record id="action_server_desk_all_case_form" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pending_case_form_view" />
+            <field name="act_window_id" ref="server_desk_case_list_action" />
+        </record>
+        <record model="ir.actions.act_window" id="server_desk_pending_list_action">
+            <field name="name">pending</field>
+            <field name="res_model">server_desk.case</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="server_desk.case_tree_view"/>
+            <field name="domain">[('user_id','=',uid),('state','!=','done')]</field>
+            <field name="context">{"search_default_priority":1}</field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="server_desk_processed_case_list_action">
+            <field name="name">processed</field>
+            <field name="res_model">server_desk.case</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">['|',('user_id','!=',uid),('state','=','done'),'|','|','|','|','|','|',('customer_id.user_ids','=like',uid),('product_id','=',uid),('tac1_id','=',uid),('tac2_id','=',uid),('master_id','=',uid),('applicant_id','=',uid),('cds_id','=',uid)]</field>
+        </record>
+        <record id="action_server_desk_tree" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="pending_case_tree_view" />
+            <field name="act_window_id" ref="server_desk_processed_case_list_action" />
+        </record>
+        <record id="action_server_desk_form" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pending_case_form_view" />
+            <field name="act_window_id" ref="server_desk_processed_case_list_action" />
+        </record>
+        <record model="ir.actions.act_window" id="server_desk_contract_list_action">
+            <field name="name">Contract</field>
+            <field name="res_model">server_desk.contract</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first contract
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="server_desk_account_list_action">
+            <field name="name">Account</field>
+            <field name="res_model">server_desk.cco_account</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first CCO account
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="server_desk_equipment_list_action">
+            <field name="name">Equipment</field>
+            <field name="res_model">server_desk.equipment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first equipment
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="server_desk_solution_list_action">
+            <field name="name">Solution</field>
+            <field name="res_model">server_desk.case</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('keyword','!=',"")]</field>
+            <field name="view_id" ref="server_desk.solution_tree_view"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first solution
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="server_desk_group_list_action">
+            <field name="name">Group</field>
+            <field name="res_model">res.groups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('category_id','=',43)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first group
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="server_desk_customer_list_action">
+            <field name="name">Customer</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('customer','=',1)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first partner
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="server_desk_error_list_action">
+            <field name="name">error</field>
+            <field name="res_model">server_desk.fault</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first error
+                </p>
+            </field>
+        </record>
+        <!-- top level menu: no parent -->
+        <menuitem id="main_serverdesk_menu" name="Server Desk"/>
+        <!-- A first level in the left side menu is needed before using action= attribute -->
+        <menuitem id="serverdesk_case_menu" name="Case" parent="main_serverdesk_menu"/>
+        <menuitem id="serverdesk_manage_menu" name="Manage" parent="main_serverdesk_menu" groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
+        <menuitem id="serverdesk_knowledge_menu" name="Knowledge" parent="main_serverdesk_menu"  groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
+        <!-- A second level in the left side menu is needed before using action= attribute -->
+        <menuitem id="all_case_menu" name="All Case" parent="serverdesk_case_menu" action="server_desk_case_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager"/>
+        <menuitem id="my_case_menu" name="My Case" string="待处理" parent="serverdesk_case_menu" action="server_desk_pending_list_action"/>
+        <menuitem id="deal_case_menu" name="Need Deal Case" string="已处理" parent="serverdesk_case_menu" action="server_desk_processed_case_list_action"/>
+        <!--
+        <menuitem id="partner_manage_menu" name="Partner Manage" parent="serverdesk_manage_menu" action="res_partner_activation_act"/>
+        -->
+        <menuitem id="partner_manage_menu" name="Partner Manage" sequence="9" parent="serverdesk_manage_menu" action="server_desk_customer_list_action"/>
+        <menuitem id="contract_manage_menu" name="Contract Manage" parent="serverdesk_manage_menu" action="server_desk_contract_list_action"/>
+        <menuitem id="equipment_manage_menu" name="Equipment Manage" parent="serverdesk_manage_menu" action="server_desk_equipment_list_action"/>
+        <menuitem id="account_manage_menu" name="Account Manage" parent="serverdesk_manage_menu" action="server_desk_account_list_action"/>
+        <menuitem id="group_manage_menu" name="Group Manage" parent="serverdesk_manage_menu" action="server_desk_group_list_action"/>
+        <menuitem id="solution_manage_menu" name="Solution Manage" parent="serverdesk_knowledge_menu" action="server_desk_solution_list_action"/>
+        <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action"/>
+
+        <!-- the following menuitem should appear *after* its parent openacademy_menu and *after* its action course_list_action -->
+        <!-- <menuitem id="courses_menu" name="Courses" parent="openacademy_menu" action="server_desk_list_action"/> -->
+        <!-- Full id location:action="openacademy.course_list_action"It is not required when it is the same module -->
+    </data>
+</openerp>

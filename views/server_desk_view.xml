@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <record model="ir.ui.view" id="case_form_view">
+        <field name="name">case.form</field>
+        <field name="model">server_desk.case</field>
+        <field name="arch" type="xml">
+            <form string="Case Form">
+                <header>
+                    <button name="set_to_cds" type="workflow" string="提交" states="new" class="oe_highlight" groups="base.group_server_desk_partner"/>
+                    <button name="set_to_tac1" type="workflow" string="转TAC一线团队" states="cds,new" class="oe_highlight" groups="base.group_server_desk_cds"/>
+                    <button name="set_to_tac2" type="workflow" string="转TAC二线团队" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac1"/>
+                    <button name="set_to_master" type="workflow" string="转专家团队" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac2"/>
+                    <button name="set_to_oem" type="workflow" string="转厂商" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_master"/>
+                    <button name="set_to_customer_feedback" type="workflow" string="等待客户反馈" states="tac1,tac2,master,oem" class="oe_highlight" groups="base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_tac1"/>
+                    <button name="set_to_past" type="workflow" string="返回上一步" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_tac1"/>
+                    <button name="set_to_audit" type="workflow" string="转服务经理" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master"/>
+                    <button name="set_to_customer_feedback1" type="workflow" string="退回" states="audit" class="oe_highlight" groups="base.group_server_desk_product_manager"/>
+                    <button name="set_to_done" type="workflow" string="关闭" states="audit" class="oe_highlight" groups="base.group_server_desk_product_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                    <group>
+                        <field name="case_title" />
+                        <field name="applicant_id" string="申请人" readonly="True"/>
+                        <field name="applicant_way" string = "申请方式" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="contact_user" string = "故障联系人" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="contact_user_phone" string = "联系电话" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="customer_id" string = "客户" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="SN" string = "SN" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
+                        <field name="product" string="产品型号"/>
+                        <field name="case_level" string = "case级别" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="case_type" string = "case类型" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="case_oem_no" groups="base.group_server_desk_cds"/>
+
+                    </group>
+                    <group>
+                        <field name="create_date" string="创建时间" readonly = "True"/>
+                        <field name="write_date" string="更新时间" readonly = "True"/>
+                        <field name="close_date" string="关闭时间" attrs="{'readony':[('case_type','!=','standby')]}"/>
+                        <field name="start_time" attrs="{'invisible':[('case_type','!=','standby')]}"/>
+                        <field name="end_time" attrs="{'invisible':[('case_type','!=','standby')]}"/>
+                    </group>
+                    </group>
+                    <notebook>
+                        <page string="故障描述">
+                            <field name="error_description" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        </page>
+                        <page string="处理过程与客户反馈">
+                            <field name="feedback_ids" >
+                                <tree string="Registered feedback" editable="top">
+                                    <field name="processor_id" string = "处理人" readonly = "True"/>
+                                    <field name = "record" string = "处理记录" attrs="{'editable':[('processor_id','=','uid'),('create_date','=',None)]}"/>
+                                    <field name = "create_date" string = "处理时间" readonly = "True"/>
+                                    <field name = "feedback_user_id" string = "反馈人" readonly="True"/>
+                                    <field name = "result" string = "处理结果" attrs="{'editable':[('feedback_user_id','=','uid')]}" />
+                                    <field name = "note" string = "反馈描述" attrs="{'editable':[('feedback_user_id','=','uid')]}"/>
+                                    <field name = "feedback_time" string = "反馈时间" attrs="{'editable':[('processor_id','=',None)]}"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="备注">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record> 
+
+    <record model="ir.ui.view" id="pending_case_form_view">
+        <field name="name">case.pending_form</field>
+        <field name="model">server_desk.case</field>
+        <field name="arch" type="xml">
+            <form string="Case Form" create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                    <group>
+                        <field name="case_title" />
+                        <field name="applicant_id" string="申请人" readonly="True"/>
+                        <field name="applicant_way" string = "申请方式" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="contact_user" string = "故障联系人" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="contact_user_phone" string = "联系电话" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="customer_id" string = "客户" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="SN" string = "SN" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="contract_id" string = "合同号" />
+                        <field name="product" string="产品型号"/>
+                        <field name="case_level" string = "case级别" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>    
+                        <field name="case_type" string = "case类型" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="case_oem_no" groups="base.group_server_desk_cds"/>
+                    </group>
+                    <group>
+                        <field name="create_date" string="创建时间" readonly = "True"/>
+                        <field name="write_date" string="更新时间" readonly = "True"/>
+                        <field name="close_date" string="关闭时间" attrs="{'readony':[('case_type','!=','standby')]}"  />
+                        <field name="start_time" string="开始时间" attrs="{'invisible':[('case_type','!=','standby')]}"/>
+                        <field name="end_time" string="结束时间" attrs="{'invisible':[('case_type','!=','standby')]}"/>
+                    </group>
+                    </group>
+                    <notebook>
+                        <page string="故障描述">
+                            <field name="error_description" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        </page>
+                        <page string="处理过程与客户反馈">
+                            <field name="feedback_ids">
+                                <tree string="Registered feedback" editable="top">
+                                    <field name="processor_id" string = "处理人" readonly = "True"/>
+                                    <field name = "record" string = "处理记录" attrs="{'edition':[('processor_id','=','uid')]}"/>
+                                    <field name = "create_date" string = "处理时间" readonly = "True"/>
+                                    <field name = "feedback_user_id" string = "反馈人" readonly="True"/>
+                                    <field name = "result" string = "处理结果" attrs="{'editable':[('feedback_user_id','!=','uid')]}" />
+                                    <field name = "note" string = "反馈描述" attrs="{'editable':[('feedback_user_id','!=','uid')]}"/>
+                                    <field name = "feedback_time" string = "反馈时间" readonly = "True"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="备注">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record> 
+    <record model="ir.ui.view" id="case_tree_view">
+            <field name="name">case.tree</field>
+            <field name="model">server_desk.case</field>
+            <field name="arch" type="xml">
+                <tree string="Case Tree">
+                    <field name="case_id" string="case号"/>
+                    <field name="applicant_id" string = "申请人"/>
+                    <field name="contract_id" string = "合同号"/>
+                    <field name="case_type" string = "case类型"/>
+                    <field name="state" string = "当前状态"/>
+                    <field name="user_id" string="当前处理人"/>
+                    <field name="write_date" string="更新时间"/>
+                </tree>
+            </field>
+    </record>
+    <record model="ir.ui.view" id="pending_case_tree_view">
+            <field name="name">case.pending_tree</field>
+            <field name="model">server_desk.case</field>
+            <field name="arch" type="xml">
+                <tree string="Case Tree" create="false" edit="false">
+                    <field name="case_id" string="case号"/>
+                    <field name="applicant_id" string = "申请人"/>
+                    <field name="contract_id" string = "合同号"/>
+                    <field name="case_type" string = "case类型"/>
+                    <field name="state" string = "当前状态"/>
+                    <field name="user_id" string="当前处理人"/>
+                    <field name="write_date" string="更新时间"/>
+                </tree>
+            </field>
+    </record>
+    <record model="ir.ui.view" id="contract_form_view">
+            <field name="name">contract.form</field>
+            <field name="model" >server_desk.contract</field>
+            <field name="arch" type="xml">
+                <form string="contract Form">
+                    <sheet>
+                        <group>
+                            <field name="contract_id" string = "合同号"/>
+                            <field name="start_time" string = "合同开始日期"/>
+                            <field name="stop_time" string = "合同截止日期"/>
+                            <field name="serivce_category1" string = "服务类型"/>    
+                            <field name="serivce_category2" string = "服务类型"/>
+                            <field name="sow" string = "sow"/>
+                            <field name="serivce_level" string = "服务级别"/>
+                            <field name="cco" string = "cco号"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+    <record model="ir.ui.view" id="contract_tree_view">
+            <field name="name">contract.tree</field>
+            <field name="model">server_desk.contract</field>
+            <field name="arch" type="xml">
+                <tree string="contract Tree">
+                    <field name="contract_id" string = "合同号"/>
+                    <field name="serivce_category1" string = "服务类型"/>
+                    <field name="sow" string = "sow"/>
+                    <field name="serivce_level" string = "服务级别"/>
+                    <field name="cco" string = "cco号"/>
+                    <field name="stop_time" string = "合同截止日期"/>
+                </tree>
+            </field>
+    </record>
+    <record model="ir.ui.view" id="equipment_form_view">
+            <field name="name">equipment.form</field>
+            <field name="model">server_desk.equipment</field>
+            <field name="arch" type="xml">
+                <form string="contract Form">
+                    <sheet>
+                        <group>
+                            <field name="SN"/>
+                            <field name="contract" string = "合同号"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+    </record>
+        
+    <record model="ir.ui.view" id="equipment_tree_view">
+            <field name="name">equipment.tree</field>
+            <field name="model">server_desk.equipment</field>
+            <field name="arch" type="xml">
+                <tree string="Equipment Tree">
+                    <field name="SN"/>
+                    <field name="contract" string = "合同号"/>
+                </tree>
+            </field>
+    </record>
+        <record model="ir.ui.view" id="Solution_form_view">
+            <field name="name">Solution.form</field>
+            <field name="model">server_desk.case</field>
+            <field name="inherit_id" ref="server_desk.case_form_view"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="解决方案">
+                        <group>
+                            <field name="keyword" string = "关键字"/>
+                            <field name="error_name" string = "故障分类"/>
+                            <field name="solution" string = "解决方案"/>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+    <record model="ir.ui.view" id="solution_tree_view">
+            <field name="name">solution.tree</field>
+            <field name="model">server_desk.case</field>
+            <field name="arch" type="xml">
+                <tree string="Solution Tree">
+                    <field name="keyword" string = "关键字"/>
+                    <field name="error_description" string="故障描述" />
+                    <field name="solution" string = "解决方案"/>
+                </tree>
+            </field>
+    </record>
+        <record model="ir.ui.view" id="Cco_form_view">
+            <field name="name">Cco.form</field>
+            <field name="model">server_desk.cco_account</field>
+            <field name="arch" type="xml">
+                <form string="cco Form">
+                    <sheet>
+                        <group>
+                            <field name="account" string = "账户"/>
+                            <field name="passward" string = "密码"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="groups_form_view">
+            <field name="name">groups.form</field>
+            <field name="model">res.groups</field>
+            <field name="inherit_id" ref="base.view_groups_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Notes']" position="attributes">
+                    <attribute name="groups">base.group_system</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Rules']" position="attributes">
+                    <attribute name="groups">base.group_system</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Access Rights']" position="attributes">
+                    <attribute name="groups">base.group_system</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Views']" position="attributes">
+                    <attribute name="groups">base.group_system</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Menus']" position="attributes">
+                    <attribute name="groups">base.group_system</attribute>
+                </xpath>
+                <xpath expr="//page[@string='Inherited']" position="attributes">
+                    <attribute name="groups">base.group_system</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_server_desk_case_filter" model="ir.ui.view">
+            <field name="name">server_desk_case.select</field>
+            <field name="model">server_desk.case</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="name" string="Case"/> 
+                    <filter string="已解决" name="done" domain="[('state', '=','done')]"/>
+                    <filter string="Tac处理" name="tac" domain="[('state', '=','tac')]"/>
+                    <filter string="专家处理" name="master" domain="[('state', '=','master')]"/>
+                    <filter string="厂商处理" name="oem" domain="[('state', '=', 'oem')]"/>
+                    <filter string="客户反馈" name="customer_feedback" domain="[('state','=','customer_feedback')]"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="客户" name="Partner" context="{'group_by':'customer_id'}"/>
+                        <filter string="申请人" name="applicant_id" context="{'group_by':'applicant_id'}"/>
+                        <filter string="类型" name="case_type" context="{'group_by':'case_type'}"/>
+                        <filter string="处理组" name="group" context="{'group_by':'group_id','visible':True}"/> 
+                        <filter string="优先级" name="priority" context="{'group_by':'priority'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</openerp>
