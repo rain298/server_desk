@@ -29,11 +29,23 @@
             <field name="res_model">server_desk.case</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="server_desk.case_tree_view"/>
             <field name="domain">[('user_id','=',uid),('state','!=','done')]</field>
             <field name="context">{"search_default_priority":1}</field>
         </record>
+
         
+        <record id="action_server_desk_pending_tree" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="sequence" eval="1" />
+            <field name="view_id" ref="server_desk.case_tree_view" />
+            <field name="act_window_id" ref="server_desk_pending_list_action" />
+        </record>
+        <record id="action_server_desk_pending_form" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="sequence" eval="12" />
+            <field name="view_id" ref="case_form_view" />
+            <field name="act_window_id" ref="server_desk_pending_list_action" />
+        </record>
         <record model="ir.actions.act_window" id="server_desk_processed_case_list_action">
             <field name="name">processed</field>
             <field name="res_model">server_desk.case</field>
