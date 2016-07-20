@@ -43,11 +43,13 @@
         </record>
         <record id="action_server_desk_tree" model="ir.actions.act_window.view">
             <field name="view_mode">tree</field>
+            <field name="sequence" eval="1" />
             <field name="view_id" ref="pending_case_tree_view" />
             <field name="act_window_id" ref="server_desk_processed_case_list_action" />
         </record>
         <record id="action_server_desk_form" model="ir.actions.act_window.view">
             <field name="view_mode">form</field>
+            <field name="sequence" eval="12" />
             <field name="view_id" ref="pending_case_form_view" />
             <field name="act_window_id" ref="server_desk_processed_case_list_action" />
         </record>
