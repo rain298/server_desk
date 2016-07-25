@@ -179,6 +179,13 @@
                             <field name="stop_time" string = "合同截止日期"/>
                             <field name="serivce_category1" string = "服务类型"/>    
                             <field name="serivce_category2" string = "服务类型"/>
+                            <field name="bill2id" />
+                            <field name="contract_type" string = "合同类型"/>
+                            <field name="access_level" sting = "访问级别"/>
+                            <field name="software_download" />
+                             <field name="srv_req" />
+                             <field name="locked"/>
+                             <field name="site_name" />
                             <field name="sow" string = "sow"/>
                             <field name="serivce_level" string = "服务级别"/>
                             <field name="cco" string = "cco号"/>
@@ -209,8 +216,22 @@
                 <form string="contract Form">
                     <sheet>
                         <group>
+                        <group>
                             <field name="SN"/>
                             <field name="contract" string = "合同号"/>
+                            <field name="server_level" string="服务级别"/>
+                            <field name="company" string = "公司"/>
+                            <field name="customer" string="客户名称"/>
+                            <field name="product" string = "设备型号"/>
+                            <field name="product_relationship" string = "产品相互关系"/>
+                         </group>
+                        <group>
+                            <field name="description" string = "设备描述"/>
+                            <field name="begin_date" string = "维保开始日期"/>
+                            <field name="end_date" string = "维保结束日期"/>
+                            <field name="last_date_of_support" string = "EOS日期"/>
+                            <field name="product_ship_date" string = "设备发货日期"/>
+                        </group>
                         </group>
                     </sheet>
                 </form>
