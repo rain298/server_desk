@@ -27,7 +27,7 @@
                         <field name="applicant_way" string = "申请方式" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user" string = "故障联系人" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user_phone" string = "联系电话" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
-                        <field name="customer_id" string = "客户" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="customer_id" string = "客户" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,    base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="SN" string = "SN" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                         <field name="product" string="产品型号"/>
@@ -91,9 +91,9 @@
                         <field name="applicant_way" string = "申请方式" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user" string = "故障联系人" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user_phone" string = "联系电话" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
-                        <field name="customer_id" string = "客户" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="customer_id" string = "客户" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="SN" string = "SN" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
-                        <field name="contract_id" string = "合同号" />
+                        <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                         <field name="product" string="产品型号"/>
                         <field name="case_level" string = "case级别" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>    
                         <field name="case_type" string = "case类型" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
@@ -144,7 +144,7 @@
                 <tree string="Case Tree">
                     <field name="case_id" string="case号"/>
                     <field name="applicant_id" string = "申请人"/>
-                    <field name="contract_id" string = "合同号"/>
+                    <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                     <field name="case_type" string = "case类型"/>
                     <field name="state" string = "当前状态"/>
                     <field name="user_id" string="当前处理人"/>
@@ -159,7 +159,7 @@
                 <tree string="Case Tree" create="false" edit="false">
                     <field name="case_id" string="case号"/>
                     <field name="applicant_id" string = "申请人"/>
-                    <field name="contract_id" string = "合同号"/>
+                    <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                     <field name="case_type" string = "case类型"/>
                     <field name="state" string = "当前状态"/>
                     <field name="user_id" string="当前处理人"/>
@@ -179,6 +179,13 @@
                             <field name="stop_time" string = "合同截止日期"/>
                             <field name="serivce_category1" string = "服务类型"/>    
                             <field name="serivce_category2" string = "服务类型"/>
+                            <field name="bill2id" />
+                            <field name="contract_type" string = "合同类型"/>
+                            <field name="access_level" sting = "访问级别"/>
+                            <field name="software_download" />
+                             <field name="srv_req" />
+                             <field name="locked"/>
+                             <field name="site_name" />
                             <field name="sow" string = "sow"/>
                             <field name="serivce_level" string = "服务级别"/>
                             <field name="cco" string = "cco号"/>
@@ -209,8 +216,22 @@
                 <form string="contract Form">
                     <sheet>
                         <group>
+                        <group>
                             <field name="SN"/>
                             <field name="contract" string = "合同号"/>
+                            <field name="server_level" string="服务级别"/>
+                            <field name="company" string = "公司"/>
+                            <field name="customer" string="客户名称"/>
+                            <field name="product" string = "设备型号"/>
+                            <field name="product_relationship" string = "产品相互关系"/>
+                         </group>
+                        <group>
+                            <field name="description" string = "设备描述"/>
+                            <field name="begin_date" string = "维保开始日期"/>
+                            <field name="end_date" string = "维保结束日期"/>
+                            <field name="last_date_of_support" string = "EOS日期"/>
+                            <field name="product_ship_date" string = "设备发货日期"/>
+                        </group>
                         </group>
                     </sheet>
                 </form>
