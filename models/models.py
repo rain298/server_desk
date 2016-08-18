@@ -69,9 +69,9 @@ class Case(models.Model):
     applicant_id = fields.Many2one('res.users', string="申请人",required=True,default=lambda self: self.env.user)
     applicant_way = fields.Char(string="申请方式",default=lambda self: self._get_app_way_def())
     customer_id = fields.Many2one('res.partner', string="客户")
-    SN = fields.Char(string="SN",required = True)
-    contract_id = fields.Many2one('server_desk.contract',string="合同",compute="_verify_contract_id",store=True)
-    product = fields.Char(string="产品型号",readonly=1,compute="_verify_contract_id",store=True)
+    SN = fields.Many2one('server_desk.equipment',string="SN",required = True)
+    contract_id = fields.Many2one(related='SN.contract',string="合同",readonly=1)
+    product = fields.Char(related='SN.product',tring="产品型号",readonly=1)
     case_type = fields.Selection([('Technology diagnosis','技术诊断'),('Technical consulting','技术咨询'),('RMA','RMA'),('DOA','DOA'),('standby','standby')],default='Technology diagnosis',string="case类型",required=True)
     case_level = fields.Selection([('level1','1级故障'),('level2','2级故障'),('level3','3级故障'),('level4','4级故障')],default='level1')
     case_type_note = fields.Text(string="case类型说明")
@@ -107,6 +107,23 @@ class Case(models.Model):
     case_oem_no=fields.Char(string='厂商case编号')
     start_time =fields.Datetime(string="开始时间")
     end_time = fields.Datetime(string="结束时间")
+    change_SN = fields.Char(string="新的SN")
+    def pop_window(self, cr, uid, ids, context=None):
+        mod_obj = self.pool.get('ir.model.data')
+        form_res = mod_obj.get_object_reference(cr, uid, 'server_desk', 'case_change_SN_view')
+        form_id = form_res and form_res[1] or False
+        value = {
+            'name': ('更换SN号'),
+            'res_model': 'server_desk.log',
+            'views': [[False, 'form']],
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
+        return value
+
+    def change_SN(self, cr, uid, ids, *args):
+        return self.pop_window(cr, uid, ids, None)
+
 
     @api.model
     def _get_app_way_def(self):
@@ -210,8 +227,8 @@ class Case(models.Model):
             self.tac1_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.tac1_id.partner_id.id])
-        if not self.case_oem_no:
-            raise exceptions.ValidationError('请填写case厂家编号')
+        # if not self.case_oem_no:
+        #     raise exceptions.ValidationError('请填写case厂家编号')
         self.send_email([self.tac1_id])
         self.state = 'tac1'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
@@ -331,9 +348,9 @@ class Case(models.Model):
 
     @api.multi
     def action_audit(self):
-        
-        if not self.solution or not self.error_name:
-            raise exceptions.ValidationError('转产品经理前，请填写解决方案与与故障原因')
+        if self.case_type != 'standby':
+            if not self.solution or not self.error_name:
+                raise exceptions.ValidationError('转产品经理前，请填写解决方案与与故障原因')
         self.state = 'audit'
         self.product_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
         self.user_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
@@ -349,9 +366,10 @@ class Case(models.Model):
         temp_groups = self.pool.get('res.groups').search(cr,uid,[('users','like',uid)],context=None)
         if temp_ids not in temp_groups:
             user= self.pool.get('res.users').browse(cr,uid,uid,context=None)
-            vals['partner_id']=user[0].partner_id.id
+            vals['customer_id']=user[0].partner_id.id
         if vals['case_type'] == 'standby' and not vals['start_time'] and not vals['end_time']:
             raise exceptions.ValidationError('请填写case开始时间，结束时间，关闭时间')
+
         if len(cases):
             vals['case_id']='C'+str(int(cases[-1].case_id[1:])+1)
         else:
@@ -403,3 +421,17 @@ class System(models.Model):
     master_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','master_group')]).users))
     cds_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','cds_group')]).users))
 
+class log(models.Model):
+    _name = 'server_desk.log'
+
+    old_SN = fields.Char()
+    new_SN = fields.Char()
+
+    def create(self, cr, uid, vals, context=None):
+        print context.get('active_id')
+        template_model = self.pool.get('server_desk.equipment')
+
+        ids = template_model.search(cr, uid, [('SN', 'like', vals['old_SN'])], context=None)
+        equipment= template_model.browse(cr, uid, ids, context=None)
+        equipment.SN = vals['new_SN']
+        return super(log, self).create(cr, uid, vals, context=context)

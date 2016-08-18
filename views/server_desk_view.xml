@@ -22,18 +22,18 @@
                 <sheet>
                     <group>
                     <group>
-                        <field name="case_title" />
+                        <field name="case_title" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                         <field name="applicant_id" string="申请人" readonly="True"/>
                         <field name="applicant_way" string = "申请方式" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user" string = "故障联系人" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user_phone" string = "联系电话" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="customer_id" string = "客户" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,    base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
-                        <field name="SN" string = "SN" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <field name="SN" string = "SN" />
                         <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                         <field name="product" string="产品型号"/>
                         <field name="case_level" string = "case级别" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="case_type" string = "case类型" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
-                        <field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <!--<field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>-->
                         <field name="case_oem_no" groups="base.group_server_desk_cds"/>
 
                     </group>
@@ -86,18 +86,23 @@
                 <sheet>
                     <group>
                     <group>
-                        <field name="case_title" />
+                        <field name="case_title" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                         <field name="applicant_id" string="申请人" readonly="True"/>
                         <field name="applicant_way" string = "申请方式" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user" string = "故障联系人" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="contact_user_phone" string = "联系电话" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="customer_id" string = "客户" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
-                        <field name="SN" string = "SN" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <group>
+                            <field name="SN" string = "SN" />
+                        </group>
+                        <group>
+                            <button name="%(server_desk_log_form_action)d" type="action" string="换SN" groups="base.group_server_desk_cds" attrs="{'invisible':[('state','==','new')]}"/>
+                        </group>
                         <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                         <field name="product" string="产品型号"/>
                         <field name="case_level" string = "case级别" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>    
                         <field name="case_type" string = "case类型" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
-                        <field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
+                        <!--<field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>-->
                         <field name="case_oem_no" groups="base.group_server_desk_cds"/>
                     </group>
                     <group>
@@ -136,13 +141,26 @@
                 </div>
             </form>
         </field>
-    </record> 
+    </record>
+    <record model="ir.ui.view" id="case_change_SN_view">
+        <field name="name">log.form</field>
+        <field name="model">server_desk.log</field>
+        <field name="arch" type="xml">
+            <form string="log Form" >
+                <group>
+                   <field name="old_SN"></field>
+                    <field name="new_SN"></field>
+                </group>
+            </form>
+        </field>
+    </record>
     <record model="ir.ui.view" id="case_tree_view">
             <field name="name">case.tree</field>
             <field name="model">server_desk.case</field>
             <field name="arch" type="xml">
                 <tree string="Case Tree">
                     <field name="case_id" string="case号"/>
+                    <field name="case_title" string="case标题"/>
                     <field name="applicant_id" string = "申请人"/>
                     <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                     <field name="case_type" string = "case类型"/>
@@ -158,6 +176,7 @@
             <field name="arch" type="xml">
                 <tree string="Case Tree" create="false" edit="false">
                     <field name="case_id" string="case号"/>
+                    <field name="case_title" string="case标题"/>
                     <field name="applicant_id" string = "申请人"/>
                     <field name="contract_id" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                     <field name="case_type" string = "case类型"/>
