@@ -9,4 +9,4 @@ fault_crw_all,fault all,model_server_desk_fault,,1,1,1,0
 res_groups_rw_manager,res_groups manager rw,base.model_res_groups,base.group_server_desk_admin,1,1,0,0
 res_groups_partner,res_groups partner,base.model_res_groups,base.group_server_desk_partner,1,0,0,0
 system_crw_all,system all,model_server_desk_system,,1,1,1,0
-
+log_all,log_all,model_server_desk_log,base.group_server_desk_cds,1,1,1,1
