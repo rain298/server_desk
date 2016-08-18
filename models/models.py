@@ -227,8 +227,8 @@ class Case(models.Model):
             self.tac1_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.tac1_id.partner_id.id])
-        if not self.case_oem_no:
-            raise exceptions.ValidationError('请填写case厂家编号')
+        # if not self.case_oem_no:
+        #     raise exceptions.ValidationError('请填写case厂家编号')
         self.send_email([self.tac1_id])
         self.state = 'tac1'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
