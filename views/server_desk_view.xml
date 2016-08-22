@@ -207,7 +207,7 @@
                              <field name="site_name" />
                             <field name="sow" string = "sow"/>
                             <field name="serivce_level" string = "服务级别"/>
-                            <field name="cco" string = "cco号"/>
+                            <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager"/>/>
                         </group>
                     </sheet>
                 </form>
@@ -223,7 +223,7 @@
                     <field name="serivce_category1" string = "服务类型"/>
                     <field name="sow" string = "sow"/>
                     <field name="serivce_level" string = "服务级别"/>
-                    <field name="cco" string = "cco号"/>
+                    <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>/>
                     <field name="stop_time" string = "合同截止日期"/>
                 </tree>
             </field>
@@ -237,7 +237,7 @@
                         <group>
                         <group>
                             <field name="SN"/>
-                            <field name="contract" string = "合同号"/>
+                            <field name="contract" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>/>
                             <field name="server_level" string="服务级别"/>
                             <field name="company" string = "公司"/>
                             <field name="customer" string="客户名称"/>
@@ -263,7 +263,7 @@
             <field name="arch" type="xml">
                 <tree string="Equipment Tree">
                     <field name="SN"/>
-                    <field name="contract" string = "合同号"/>
+                    <field name="contract" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>/>
                 </tree>
             </field>
     </record>

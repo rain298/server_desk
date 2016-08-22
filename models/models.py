@@ -245,7 +245,7 @@ class Case(models.Model):
             self.tac2_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.tac2_id.partner_id.id])
-        self.send_email([self.tac2_id])
+        # self.send_email([self.tac2_id])
         self.state = 'tac2'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
 
@@ -278,17 +278,25 @@ class Case(models.Model):
         self.group_id = recs[0]
         self.user_id = self.tac1_id
         self.priority = "低优先级"
-        self.feedback_ids.create({'processor_id': self.user_id})
-        
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id, 'case_id': self.id})
+
+
     @api.multi
     def action_customer_feedback(self):
-        if not self.judge_deal():
-            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
-        self.state = 'customer_feedback'
-        self.user_id = self.env.user
-        for feedback in self.feedback_ids:
-            if feedback.processor_id == self.env.user:
-                feedback.feedback_user_id=self.env.user
+        if self.state != 'audit':
+            if not self.judge_deal():
+                raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+
+            self.user_id = self.env.user
+            self.state = 'customer_feedback'
+
+            for feedback in self.feedback_ids:
+                if feedback.processor_id == self.env.user:
+                    feedback.feedback_user_id=self.env.user
+        else:
+            self.state = 'customer_feedback'
+            for feedback in self.feedback_ids:
+                self.user_id = feedback.processor_id
         
     @api.multi
     def action_customer_feedback_to_tac1(self):
