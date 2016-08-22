@@ -153,6 +153,24 @@
             <field name="context">{"active_id":active_id}</field>
             <field name="target">current</field>
         </record>
+        <record id="nantian_case_partner_action" model="ir.actions.act_window">
+            <field name="name">service.partner</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name ="domain">[('category','=','case客户')]</field>
+            <!--<field name="view_id" ref="nantian_service_partner_form"/>-->
+        </record>
+        <record id="nantian_case_tree_partner_action" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="base.view_partner_tree" />
+            <field name="act_window_id" ref="nantian_case_partner_action" />
+        </record>
+        <record id="nantian_case_form_partner_action" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="nantian_case_partner_form" />
+            <field name="act_window_id" ref="nantian_case_partner_action" />
+        </record>
         <!-- top level menu: no parent -->
         <menuitem id="main_serverdesk_menu" name="Server Desk"/>
         <!-- A first level in the left side menu is needed before using action= attribute -->
@@ -166,7 +184,7 @@
         <!--
         <menuitem id="partner_manage_menu" name="Partner Manage" parent="serverdesk_manage_menu" action="res_partner_activation_act"/>
         -->
-        <menuitem id="partner_manage_menu" name="Partner Manage" sequence="9" parent="serverdesk_manage_menu" action="server_desk_customer_list_action"/>
+        <menuitem id="partner_manage_menu" name="Partner Manage" sequence="9" parent="serverdesk_manage_menu" action="nantian_case_partner_action"/>
         <menuitem id="contract_manage_menu" name="Contract Manage" parent="serverdesk_manage_menu" action="server_desk_contract_list_action"/>
         <menuitem id="equipment_manage_menu" name="Equipment Manage" parent="serverdesk_manage_menu" action="server_desk_equipment_list_action"/>
         <menuitem id="account_manage_menu" name="Account Manage" parent="serverdesk_manage_menu" action="server_desk_account_list_action"/>

@@ -142,12 +142,13 @@ class Case(models.Model):
                     self.product = equipment[0].product
                     return
             raise exceptions.ValidationError('SN号不存在或已过保')
-    @api.one
-    def _compute_applicant_way(self):
-        if  self.env['res.groups'].search([('name','=','cds_group')]) in self.env.user.groups_id:
-            self.applicant_way = 'phone'
-        else:
-            self.applicant_way = 'WEB'
+
+    # @api.one
+    # def _compute_applicant_way(self):
+    #     if  self.env['res.groups'].search([('name','=','cds_group')]) in self.env.user.groups_id:
+    #         self.applicant_way = 'phone'
+    #     else:
+    #         self.applicant_way = 'WEB'
 
     def send_email(self,cr,uid,users,context=None):
             template_model = self.pool.get('email.template')
@@ -245,7 +246,7 @@ class Case(models.Model):
             self.tac2_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.tac2_id.partner_id.id])
-        # self.send_email([self.tac2_id])
+        self.send_email([self.tac2_id])
         self.state = 'tac2'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
 
@@ -278,6 +279,7 @@ class Case(models.Model):
         self.group_id = recs[0]
         self.user_id = self.tac1_id
         self.priority = "低优先级"
+        self.send_email([self.tac1_id])
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id, 'case_id': self.id})
 
 
@@ -297,6 +299,7 @@ class Case(models.Model):
             self.state = 'customer_feedback'
             for feedback in self.feedback_ids:
                 self.user_id = feedback.processor_id
+            self.send_email([self.tac1_id])
         
     @api.multi
     def action_customer_feedback_to_tac1(self):
@@ -362,7 +365,8 @@ class Case(models.Model):
         self.state = 'audit'
         self.product_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
         self.user_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
-    
+        self.send_email([self.user_id])
+
     def create(self, cr, uid, vals, context=None):
         dates= fields.Date.today().split('-')
         date = ''.join(dates)
