@@ -53,8 +53,8 @@ class Contract(models.Model):
     srv_req = fields.Char(string="Service Request Management")
     locked = fields.Char(string="Locked")
     site_name = fields.Char(string="Installed-At Site Name ")
-    partner_id = fields.Many2one('res.partner', string="客户")
-    
+    partner_id = fields.Many2many('res.partner', string="客户")
+
 class Case(models.Model):
     _name ='server_desk.case'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
