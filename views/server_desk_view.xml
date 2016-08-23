@@ -186,7 +186,7 @@
                 </tree>
             </field>
     </record>
-    <record model="ir.ui.view" id="contract_form_view">
+    <record model="ir.ui.view" id="server_desk_contract_form_view">
             <field name="name">contract.form</field>
             <field name="model" >server_desk.contract</field>
             <field name="arch" type="xml">
@@ -196,7 +196,7 @@
                             <field name="contract_id" string = "合同号"/>
                             <field name="start_time" string = "合同开始日期"/>
                             <field name="stop_time" string = "合同截止日期"/>
-                            <field name="serivce_category1" string = "服务类型"/>    
+                            <field name="serivce_category1" string = "服务类型"/>
                             <field name="serivce_category2" string = "服务类型"/>
                             <field name="bill2id" />
                             <field name="contract_type" string = "合同类型"/>
@@ -207,14 +207,14 @@
                              <field name="site_name" />
                             <field name="sow" string = "sow"/>
                             <field name="serivce_level" string = "服务级别"/>
-                            <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager"/>/>
+                            <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager"/>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
         
-    <record model="ir.ui.view" id="contract_tree_view">
+    <record model="ir.ui.view" id="server_desk_contract_tree_view">
             <field name="name">contract.tree</field>
             <field name="model">server_desk.contract</field>
             <field name="arch" type="xml">
@@ -223,12 +223,12 @@
                     <field name="serivce_category1" string = "服务类型"/>
                     <field name="sow" string = "sow"/>
                     <field name="serivce_level" string = "服务级别"/>
-                    <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>/>
+                    <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>
                     <field name="stop_time" string = "合同截止日期"/>
                 </tree>
             </field>
     </record>
-    <record model="ir.ui.view" id="equipment_form_view">
+    <record model="ir.ui.view" id="server_desk_equipment_form_view">
             <field name="name">equipment.form</field>
             <field name="model">server_desk.equipment</field>
             <field name="arch" type="xml">
@@ -237,7 +237,7 @@
                         <group>
                         <group>
                             <field name="SN"/>
-                            <field name="contract" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>/>
+                            <field name="contract" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                             <field name="server_level" string="服务级别"/>
                             <field name="company" string = "公司"/>
                             <field name="customer" string="客户名称"/>
@@ -257,13 +257,13 @@
             </field>
     </record>
         
-    <record model="ir.ui.view" id="equipment_tree_view">
+    <record model="ir.ui.view" id="server_desk_equipment_tree_view">
             <field name="name">equipment.tree</field>
             <field name="model">server_desk.equipment</field>
             <field name="arch" type="xml">
                 <tree string="Equipment Tree">
                     <field name="SN"/>
-                    <field name="contract" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>/>
+                    <field name="contract" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                 </tree>
             </field>
     </record>
