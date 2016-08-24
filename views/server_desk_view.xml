@@ -196,19 +196,24 @@
                             <field name="contract_id" string = "合同号"/>
                             <field name="start_time" string = "合同开始日期"/>
                             <field name="stop_time" string = "合同截止日期"/>
-                            <field name="serivce_category1" string = "服务类型"/>
-                            <field name="serivce_category2" string = "服务类型"/>
                             <field name="bill2id" />
                             <field name="contract_type" string = "合同类型"/>
-                            <field name="access_level" sting = "访问级别"/>
+                            <field name="access_level" sting = "服务类型"/>
                             <field name="software_download" />
                              <field name="srv_req" />
                              <field name="locked"/>
                              <field name="site_name" />
                             <field name="sow" string = "sow"/>
                             <field name="serivce_level" string = "服务级别"/>
-                            <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager"/>
                         </group>
+                        <notebook>
+                            <page>
+                                <field name="contract_id" string="合同号"></field>
+                            </page>
+                            <page>
+                                <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager"/>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -220,7 +225,7 @@
             <field name="arch" type="xml">
                 <tree string="contract Tree">
                     <field name="contract_id" string = "合同号"/>
-                    <field name="serivce_category1" string = "服务类型"/>
+                    <field name="contract_type" string = "合同类型"/>
                     <field name="sow" string = "sow"/>
                     <field name="serivce_level" string = "服务级别"/>
                     <field name="cco" string = "cco号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>
@@ -252,6 +257,7 @@
                             <field name="product_ship_date" string = "设备发货日期"/>
                         </group>
                         </group>
+
                     </sheet>
                 </form>
             </field>
@@ -264,6 +270,10 @@
                 <tree string="Equipment Tree">
                     <field name="SN"/>
                     <field name="contract" string = "合同号" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
+                    <field name="product" string = "设备型号"/>
+                    <field name="product_relationship" string = "产品相互关系"/>
+                    <field name="customer" string="客户名称"/>
+                    <field name="server_level" string="服务级别"/>
                 </tree>
             </field>
     </record>

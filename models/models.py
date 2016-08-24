@@ -24,7 +24,7 @@ class equipment(models.Model):
     contract = fields.Many2one('server_desk.contract', string="CONTRACT NUMBER") #合同号
     server_level = fields.Char(string="SERVICE LEVEL") #服务级别
     company = fields.Char(string="BILL TO NAME") #公司名称
-    customer = fields.Char(string="SITE NAME") #客户名称
+    customer = fields.Many2one('res.partner',string="SITE NAME") #客户名称
     product = fields.Char(string="PRODUCT NUMBER") #产品型号
     product_relationship = fields.Char(string="PRODUCT RELATIONSHIP") #产品相互关系
     description  = fields.Char(string="DESCRIPTION") #产品描述
@@ -39,8 +39,8 @@ class Contract(models.Model):
     _rec_name = 'contract_id'
 
     contract_id = fields.Char(string="Contract Number", required=True)
-    start_time = fields.Date()
-    stop_time = fields.Date()
+    start_time = fields.Date(compute='_count_time',store='True')
+    stop_time = fields.Date(compute='_count_time',store='True')
     serivce_category1 = fields.Char()
     serivce_category2 = fields.Char()
     sow = fields.Text()
@@ -54,6 +54,20 @@ class Contract(models.Model):
     locked = fields.Char(string="Locked")
     site_name = fields.Char(string="Installed-At Site Name ")
     partner_id = fields.Many2many('res.partner', string="客户")
+    equipment_ids = fields.One2many('server_desk.equipment','contract',string="设备")
+
+    @api.multi
+    @api.depends('equipment_ids')
+    def _count_time(self):
+        for record in self:
+            record.start_time = record.equipment_ids[0].begin_date
+            record.stop_time = record.equipment_ids[0].end_date
+            for equipment in record.equipment_ids:
+                if record.start_time > equipment.begin_date:
+                    record.start_time = equipment.begin_date
+                if record.stop_time < equipment.end_date:
+                    record.stop_time=equipment.end_date
+
 
 class Case(models.Model):
     _name ='server_desk.case'
