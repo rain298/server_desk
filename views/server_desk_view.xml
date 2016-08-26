@@ -68,6 +68,13 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="解决方案">
+                        <group>
+                            <field name="keyword" string = "关键字"/>
+                            <field name="error_name" string = "故障分类"/>
+                            <field name="solution" string = "解决方案"/>
+                        </group>
+                        </page>
                         <page string="备注">
                             <field name="note"/>
                         </page>
@@ -133,6 +140,7 @@
                                 </tree>
                             </field>
                         </page>
+
                         <page string="备注">
                             <field name="note"/>
                         </page>
