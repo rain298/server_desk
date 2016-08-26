@@ -84,7 +84,7 @@ class Case(models.Model):
     applicant_id = fields.Many2one('res.users', string="申请人",required=True,default=lambda self: self.env.user)
     applicant_way = fields.Char(string="申请方式",default=lambda self: self._get_app_way_def())
     customer_id = fields.Many2one('res.partner', string="客户" ,domain=[('category','=',u'case客户')])
-    SN_char = fields.Char(string="SN",required = True)
+    SN_char = fields.Char(string="SN")
     SN = fields.Many2one('server_desk.equipment',string="SN",required = True)
     SN_customer = fields.Many2one(related='SN.customer',string="SN客户",domain=[('category','=',u'case客户')])
     contract_id = fields.Many2one(related='SN.contract',string="合同",readonly=1)
@@ -151,6 +151,19 @@ class Case(models.Model):
             else:
                 raise exceptions.ValidationError('SN号不存在或已过保')
 
+    @api.multi
+    def onchange_SN_char(self, SN):
+        result = {'value': {}}
+
+        if SN:
+            get_sn = self.env['server_desk.equipment'].search([('id', '=', SN)], limit=1)
+            print get_sn
+            if get_sn:
+                result['value']['SN_char'] = get_sn.SN
+                return result
+            else:
+                raise exceptions.ValidationError('SN号不存在或已过保')
+
     def change_SN(self, cr, uid, ids, *args):
         return self.pop_window(cr, uid, ids, None)
 
@@ -158,6 +171,7 @@ class Case(models.Model):
     @api.model
     def _get_app_way_def(self):
         if self.env['res.groups'].search([('name', '=', 'cds_group')],limit=1) in self.env.user.groups_id:
+            print "nihao"
             return "电话"
         return "Web"
 
