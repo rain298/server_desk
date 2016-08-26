@@ -7,6 +7,16 @@
         <field name="arch" type="xml">
             <form string="Case Form" >
                 <header>
+                    <button name="set_to_cds" type="workflow" string="提交" states="new" class="oe_highlight" groups="base.group_server_desk_partner"/>
+                    <button name="set_to_tac1" type="workflow" string="转TAC一线团队" states="cds,new" class="oe_highlight" groups="base.group_server_desk_cds"/>
+                    <button name="set_to_tac2" type="workflow" string="转TAC二线团队" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac1"/>
+                    <button name="set_to_master" type="workflow" string="转专家团队" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac2"/>
+                    <button name="set_to_oem" type="workflow" string="转厂商" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_master"/>
+                    <button name="set_to_customer_feedback" type="workflow" string="等待客户反馈" states="tac1,tac2,master,oem" class="oe_highlight" groups="base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_tac1"/>
+                    <button name="set_to_past" type="workflow" string="返回上一步" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_tac1"/>
+                    <button name="set_to_audit" type="workflow" string="转服务经理" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master"/>
+                    <button name="set_to_customer_feedback1" type="workflow" string="退回" states="audit" class="oe_highlight" groups="base.group_server_desk_product_manager"/>
+                    <button name="set_to_done" type="workflow" string="关闭" states="audit" class="oe_highlight" groups="base.group_server_desk_product_manager"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -76,16 +86,6 @@
         <field name="arch" type="xml">
             <form string="Case Form" create="false" edit="false">
                 <header>
-                    <button name="set_to_cds" type="workflow" string="提交" states="new" class="oe_highlight" groups="base.group_server_desk_partner"/>
-                    <button name="set_to_tac1" type="workflow" string="转TAC一线团队" states="cds,new" class="oe_highlight" groups="base.group_server_desk_cds"/>
-                    <button name="set_to_tac2" type="workflow" string="转TAC二线团队" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac1"/>
-                    <button name="set_to_master" type="workflow" string="转专家团队" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac2"/>
-                    <button name="set_to_oem" type="workflow" string="转厂商" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_master"/>
-                    <button name="set_to_customer_feedback" type="workflow" string="等待客户反馈" states="tac1,tac2,master,oem" class="oe_highlight" groups="base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_tac1"/>
-                    <button name="set_to_past" type="workflow" string="返回上一步" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_tac1"/>
-                    <button name="set_to_audit" type="workflow" string="转服务经理" states="customer_feedback" class="oe_highlight" groups="base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master"/>
-                    <button name="set_to_customer_feedback1" type="workflow" string="退回" states="audit" class="oe_highlight" groups="base.group_server_desk_product_manager"/>
-                    <button name="set_to_done" type="workflow" string="关闭" states="audit" class="oe_highlight" groups="base.group_server_desk_product_manager"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -105,7 +105,7 @@
                         <field name="case_level" string = "case级别" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="case_type" string = "case类型" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <!--<field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>-->
-                        <field name="case_oem_no" groups="base.group_server_desk_cds"/>
+                        <field name="case_oem_no" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
 
                     </group>
                     <group>

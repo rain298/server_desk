@@ -144,7 +144,6 @@ class Case(models.Model):
 
         if SN_char:
             get_sn=self.env['server_desk.equipment'].search([('SN','=',SN_char)],limit=1)
-            print get_sn
             if get_sn:
                 result['value']['SN']=get_sn.id
                 return result
@@ -157,7 +156,6 @@ class Case(models.Model):
 
         if SN:
             get_sn = self.env['server_desk.equipment'].search([('id', '=', SN)], limit=1)
-            print get_sn
             if get_sn:
                 result['value']['SN_char'] = get_sn.SN
                 return result
@@ -171,7 +169,6 @@ class Case(models.Model):
     @api.model
     def _get_app_way_def(self):
         if self.env['res.groups'].search([('name', '=', 'cds_group')],limit=1) in self.env.user.groups_id:
-            print "nihao"
             return "电话"
         return "Web"
 
