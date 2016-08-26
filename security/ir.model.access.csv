@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_server_desk_server_desk,server_desk.server_desk,model_server_desk_server_desk,,1,0,0,0
-case_crw_all,case all,model_server_desk_case,,1,1,1,0
+case_crw_all,case all,model_server_desk_case,,1,1,0,0
+case_crw_create,case create,model_server_desk_case,base.group_server_desk_cds,base.group_server_desk_partner,1,1,1,0
 feedback_crw_all,feedback all,model_server_desk_feedback,,1,1,1,0
 equipment_crw_all,equipment all,model_server_desk_equipment,,1,1,1,0
 contract_crw_all,contract all,model_server_desk_contract,,1,1,1,0
