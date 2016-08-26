@@ -139,12 +139,14 @@ class Case(models.Model):
         return value
 
     @api.multi
-    def set_SN(self,SN_char,SN):
+    def onchange_SN(self,SN_char):
         result = {'value': {}}
+
         if SN_char:
             get_sn=self.env['server_desk.equipment'].search([('SN','=',SN_char)],limit=1)
+            print get_sn
             if get_sn:
-                result['value']['SN']=get_sn.SN
+                result['value']['SN']=get_sn.id
                 return result
             else:
                 raise exceptions.ValidationError('SN号不存在或已过保')
