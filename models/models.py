@@ -83,8 +83,10 @@ class Case(models.Model):
     case_id = fields.Char(required=True)
     applicant_id = fields.Many2one('res.users', string="申请人",required=True,default=lambda self: self.env.user)
     applicant_way = fields.Char(string="申请方式",default=lambda self: self._get_app_way_def())
-    customer_id = fields.Many2one('res.partner', string="客户")
+    customer_id = fields.Many2one('res.partner', string="客户" ,domain=[('category','=',u'case客户')])
+    SN_char = fields.Char(string="SN",required = True)
     SN = fields.Many2one('server_desk.equipment',string="SN",required = True)
+    SN_customer = fields.Many2one(related='SN.customer',string="SN客户",domain=[('category','=',u'case客户')])
     contract_id = fields.Many2one(related='SN.contract',string="合同",readonly=1)
     product = fields.Char(related='SN.product',tring="产品型号",readonly=1)
     case_type = fields.Selection([('Technology diagnosis','技术诊断'),('Technical consulting','技术咨询'),('RMA','RMA'),('DOA','DOA'),('standby','standby')],default='Technology diagnosis',string="case类型",required=True)
@@ -135,6 +137,17 @@ class Case(models.Model):
             'target': 'new',
         }
         return value
+
+    @api.multi
+    def set_SN(self,SN_char,SN):
+        result = {'value': {}}
+        if SN_char:
+            get_sn=self.env['server_desk.equipment'].search([('SN','=',SN_char)],limit=1)
+            if get_sn:
+                result['value']['SN']=get_sn.SN
+                return result
+            else:
+                raise exceptions.ValidationError('SN号不存在或已过保')
 
     def change_SN(self, cr, uid, ids, *args):
         return self.pop_window(cr, uid, ids, None)

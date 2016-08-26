@@ -173,7 +173,7 @@
         <!-- A first level in the left side menu is needed before using action= attribute -->
         <menuitem id="serverdesk_case_menu" name="Case" parent="main_serverdesk_menu"/>
         <menuitem id="serverdesk_manage_menu" name="Manage" parent="main_serverdesk_menu" groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
-        <menuitem id="serverdesk_knowledge_menu" name="Knowledge" parent="main_serverdesk_menu"  groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
+        <menuitem id="serverdesk_knowledge_menu" name="Knowledge" parent="main_serverdesk_menu"  groups="base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master"/>
         <!-- A second level in the left side menu is needed before using action= attribute -->
         <menuitem id="all_case_menu" name="All Case" parent="serverdesk_case_menu" action="server_desk_case_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>
         <menuitem id="my_case_menu" name="My Case" string="待处理" parent="serverdesk_case_menu" action="server_desk_pending_list_action"/>
@@ -187,7 +187,7 @@
         <menuitem id="account_manage_menu" name="Account Manage" parent="serverdesk_manage_menu" action="server_desk_account_list_action"/>
         <menuitem id="group_manage_menu" name="Group Manage" parent="serverdesk_manage_menu" action="server_desk_group_list_action"/>
         <menuitem id="solution_manage_menu" name="Solution Manage" parent="serverdesk_knowledge_menu" action="server_desk_solution_list_action"/>
-        <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action"/>
+        <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action" groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
 
         <!-- the following menuitem should appear *after* its parent openacademy_menu and *after* its action course_list_action -->
         <!-- <menuitem id="courses_menu" name="Courses" parent="openacademy_menu" action="server_desk_list_action"/> -->
