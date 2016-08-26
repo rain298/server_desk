@@ -19,7 +19,7 @@
                         <field name="contact_user_phone" string = "联系电话" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
                         <field name="customer_id" string = "客户" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}" options='{"no_open":True,"no_create":1,"no_create_edit":1}'/>
                         <group>
-                            <field name="SN_char" string = "SN" onchange="set_SN(SN_char,SN)" groups="base.group_server_desk_partner"/>
+                            <field name="SN_char" string = "SN" onchange="set_SN(SN_char)" groups="base.group_server_desk_partner"/>
                             <field name="SN" string = "SN" options='{"no_open":True,"no_create":1,"no_create_edit":1}' groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2" />
                         </group>
                         <group>
