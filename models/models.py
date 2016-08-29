@@ -209,7 +209,6 @@ class Case(models.Model):
             to_list = []
             for user in users:
                 to_list.append(formataddr((Header(user.name,'utf-8').encode(),user.email)))
-            error_description = data['error_description']
             mail_id = mail_mail.create(cr, uid, {
                             'body_html': '<div><p>Hello,</p>'
                                 '<p>The following email sent to  cannot be accepted because this is '
