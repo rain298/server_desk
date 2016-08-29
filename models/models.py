@@ -210,12 +210,15 @@ class Case(models.Model):
             for user in users:
                 to_list.append(formataddr((Header(user.name,'utf-8').encode(),user.email)))
             mail_mail = self.pool.get('mail.mail')
+            case_title = self.case_title
+            product = self.SN.product
+            error_description = self.error_description
             mail_id = mail_mail.create(cr, uid, {
                             'body_html': '<div><p>Hello,</p>'
                                 '<p>The following email sent to  cannot be accepted because this is '
                                 'a private email address. Only allowed people can contact us at this address.</p></div>'
                                 '<blockquote>%s</blockquote>' % template[0].body_html,
-                            'subject': 'Re: %s+%s+%s' %(self.case_title,self.SN.product,self.error_description),
+                            'subject': 'Re: %s+%s+%s' %(case_title,product,error_description),
                             'email_to': to_list,
                             'auto_delete': True,
                         }, context=context)
