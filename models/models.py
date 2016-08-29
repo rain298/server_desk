@@ -202,23 +202,20 @@ class Case(models.Model):
     #     else:
     #         self.applicant_way = 'WEB'
 
-    def send_email(self,cr,uid,users,context=None):
+    def send_email(self,cr,uid,users,data=[],context=None):
             template_model = self.pool.get('email.template')
             ids = template_model.search(cr,uid,[('name','=','case邮件提醒')],context=None)
             template = template_model.browse(cr,uid,ids,context=None)
             to_list = []
             for user in users:
                 to_list.append(formataddr((Header(user.name,'utf-8').encode(),user.email)))
-            mail_mail = self.pool.get('mail.mail')
-            case_title = self.case_title
-            product = self.SN.product
-            error_description = self.error_description
+            error_description = data['error_description']
             mail_id = mail_mail.create(cr, uid, {
                             'body_html': '<div><p>Hello,</p>'
                                 '<p>The following email sent to  cannot be accepted because this is '
                                 'a private email address. Only allowed people can contact us at this address.</p></div>'
                                 '<blockquote>%s</blockquote>' % template[0].body_html,
-                            'subject': 'Re: %s+%s+%s' %(case_title,product,error_description),
+                            'subject': 'Re: %s+%s+%s' %(data[0],data[1],data[2]),
                             'email_to': to_list,
                             'auto_delete': True,
                         }, context=context)
@@ -266,7 +263,8 @@ class Case(models.Model):
             self.cds_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.cds_id.partner_id.id])
-        self.send_email([self.cds_id])
+        data=[self.case_title,self.product,self.error_description]
+        self.send_email([self.cds_id],data)
         #self.user_id = self.env['res.groups'].search([('name','=','cds_group')]).users[0]
 
     @api.multi
@@ -285,7 +283,8 @@ class Case(models.Model):
             self.message_subscribe([self.tac1_id.partner_id.id])
         # if not self.case_oem_no:
         #     raise exceptions.ValidationError('请填写case厂家编号')
-        self.send_email([self.tac1_id])
+        data = [self.case_title, self.product, self.error_description]
+        self.send_email([self.tac1_id],data)
         self.state = 'tac1'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
 
@@ -301,7 +300,8 @@ class Case(models.Model):
             self.tac2_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.tac2_id.partner_id.id])
-        self.send_email([self.tac2_id])
+        data = [self.case_title, self.product, self.error_description]
+        self.send_email([self.tac2_id],data)
         self.state = 'tac2'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
 
@@ -317,7 +317,8 @@ class Case(models.Model):
             self.master_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.master_id.partner_id.id])
-        self.send_email([self.master_id])
+        data = [self.case_title, self.product, self.error_description]
+        self.send_email([self.master_id],data)
         self.state = 'master'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
 
@@ -334,7 +335,8 @@ class Case(models.Model):
         self.group_id = recs[0]
         self.user_id = self.tac1_id
         self.priority = "低优先级"
-        self.send_email([self.tac1_id])
+        data = [self.case_title, self.product, self.error_description]
+        self.send_email([self.tac1_id,data])
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id, 'case_id': self.id})
 
 
@@ -354,7 +356,8 @@ class Case(models.Model):
             self.state = 'customer_feedback'
             for feedback in self.feedback_ids:
                 self.user_id = feedback.processor_id
-            self.send_email([self.tac1_id])
+            data = [self.case_title, self.product, self.error_description]
+            self.send_email([self.tac1_id],data)
         
     @api.multi
     def action_customer_feedback_to_tac1(self):
@@ -420,7 +423,8 @@ class Case(models.Model):
         self.state = 'audit'
         self.product_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
         self.user_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
-        self.send_email([self.user_id])
+        data = [self.case_title, self.product, self.error_description]
+        self.send_email([self.user_id],data)
 
     def create(self, cr, uid, vals, context=None):
         dates= fields.Date.today().split('-')
