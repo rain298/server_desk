@@ -173,6 +173,16 @@ class Case(models.Model):
             return "电话"
         return "Web"
 
+    @api.one
+    def onchange_way(self,applicant_id):
+        result = {'value': {}}
+        if applicant_id in self.env['res.groups'].search([('name', '=', 'cds_group')],limit=1).users.ids:
+            result['value']['applicant_way'] = '电话'
+        else:
+            result['value']['applicant_way'] = 'Web'
+        return result
+
+
     @api.depends('SN')
     @api.one
     def _verify_contract_id(self):
@@ -205,7 +215,7 @@ class Case(models.Model):
                                 '<p>The following email sent to  cannot be accepted because this is '
                                 'a private email address. Only allowed people can contact us at this address.</p></div>'
                                 '<blockquote>%s</blockquote>' % template[0].body_html,
-                            'subject': 'Re: %s' % template[0].subject.encode('utf-8'),
+                            'subject': 'Re: %s+%s+%s' %(self.case_title,self.product,self.error_description),
                             'email_to': to_list,
                             'auto_delete': True,
                         }, context=context)
