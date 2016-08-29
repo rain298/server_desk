@@ -215,7 +215,7 @@ class Case(models.Model):
                                 '<p>The following email sent to  cannot be accepted because this is '
                                 'a private email address. Only allowed people can contact us at this address.</p></div>'
                                 '<blockquote>%s</blockquote>' % template[0].body_html,
-                            'subject': 'Re: %s+%s+%s' %(self.case_title,self.product,self.error_description),
+                            'subject': 'Re: %s+%s+%s' %(self.case_title,self.SN.product,self.error_description),
                             'email_to': to_list,
                             'auto_delete': True,
                         }, context=context)
