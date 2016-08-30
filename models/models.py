@@ -4,6 +4,7 @@ from openerp import models, fields, api,exceptions
 from email.utils import formataddr
 import email
 from email.header import Header
+
 class server_desk(models.Model):
     _name = 'server_desk.server_desk'
 
@@ -209,13 +210,17 @@ class Case(models.Model):
             to_list = []
             for user in users:
                 to_list.append(formataddr((Header(user.name,'utf-8').encode(),user.email)))
+            mail_mail = self.pool.get('mail.mail')
+
             mail_id = mail_mail.create(cr, uid, {
                             'body_html': '<div><p>Hello,</p>'
                                 '<p>The following email sent to  cannot be accepted because this is '
                                 'a private email address. Only allowed people can contact us at this address.</p></div>'
                                 '<blockquote>%s</blockquote>' % template[0].body_html,
-                            'subject': 'Re: %s+%s+%s' %(data[0],data[1],data[2]),
-                            'email_to': to_list,
+                            # 'subject': 'Re: %s+%s+%s' %(str(data[0]).decode('utf-8').encode('gbk'),str(data[1]).decode('utf-8').encode('gbk'),str(data[2]).decode('utf-8').encode('gbk')),
+                            'subject': 'data[0]'+'data[1]'+'data[2]',
+
+                             'email_to': to_list,
                             'auto_delete': True,
                         }, context=context)
             mail_mail.send(cr, uid, [mail_id], context=context)
