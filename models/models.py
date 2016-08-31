@@ -84,9 +84,9 @@ class Case(models.Model):
     case_id = fields.Char(required=True)
     applicant_id = fields.Many2one('res.users', string="申请人",required=True,default=lambda self: self.env.user)
     applicant_way = fields.Char(string="申请方式",default=lambda self: self._get_app_way_def())
-    customer_id = fields.Many2one('res.partner', string="客户" ,domain=[('category','=',u'case客户')])
     SN_char = fields.Char(string="SN")
     SN = fields.Many2one('server_desk.equipment',string="SN",required = True)
+    customer_id = fields.Many2one(related='SN.customer', string="客户",readonly=1, domain=[('category', '=', u'case客户')])
     # SN_customer = fields.Many2one(related='SN.customer',string="SN客户",domain=[('category','=',u'case客户')])
     contract_id = fields.Many2one(related='SN.contract',string="合同",readonly=1)
     product = fields.Char(related='SN.product',tring="产品型号",readonly=1)
@@ -170,19 +170,9 @@ class Case(models.Model):
 
     @api.model
     def _get_app_way_def(self):
-        if self.env['res.groups'].search([('name', '=', 'cds_group')],limit=1) in self.env.user.groups_id:
+        if self.env['res.groups'].search([('name', '=', '服务台')],limit=1) in self.env.user.groups_id:
             return "电话"
         return "Web"
-
-    @api.one
-    def onchange_way(self,applicant_id):
-        result = {'value': {}}
-        if applicant_id in self.env['res.groups'].search([('name', '=', 'cds_group')],limit=1).users.ids:
-            result['value']['applicant_way'] = '电话'
-        else:
-            result['value']['applicant_way'] = 'Web'
-        return result
-
 
     @api.depends('SN')
     @api.one
@@ -213,13 +203,10 @@ class Case(models.Model):
             mail_mail = self.pool.get('mail.mail')
 
             mail_id = mail_mail.create(cr, uid, {
-                            'body_html': '<div><p>Hello,</p>'
-                                '<p>The following email sent to  cannot be accepted because this is '
-                                'a private email address. Only allowed people can contact us at this address.</p></div>'
-                                '<blockquote>%s</blockquote>' % template[0].body_html,
+                            'body_html': '<div><p>您好:</p>'
+                                '<p>这个case需要您处理,您可登录：<a href="http://123.56.147.94:8000">http://123.56.147.94:8000</a></p></div>',
                             # 'subject': 'Re: %s+%s+%s' %(str(data[0]).decode('utf-8').encode('gbk'),str(data[1]).decode('utf-8').encode('gbk'),str(data[2]).decode('utf-8').encode('gbk')),
-                            'subject': str(data[0])+str(data[1])+str(data[2]),
-
+                            'subject': str(data[0])+','+str(data[1])+','+str(data[2]),
                              'email_to': to_list,
                             'auto_delete': True,
                         }, context=context)
@@ -267,7 +254,7 @@ class Case(models.Model):
             self.cds_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.cds_id.partner_id.id])
-        data=[self.case_title,self.product,self.error_description]
+        data=[self.case_id,self.product,self.case_title]
         self.send_email([self.cds_id],data)
         #self.user_id = self.env['res.groups'].search([('name','=','cds_group')]).users[0]
 
@@ -275,6 +262,7 @@ class Case(models.Model):
     def action_new(self):
         self.state = 'new'
         self.user_id = self.env.uid
+
     @api.multi
     def action_tac1(self,subtype_ids=None):
         recs = self.env['res.groups'].search([('name','=','tac1_group')])
@@ -287,7 +275,7 @@ class Case(models.Model):
             self.message_subscribe([self.tac1_id.partner_id.id])
         # if not self.case_oem_no:
         #     raise exceptions.ValidationError('请填写case厂家编号')
-        data = [self.case_title, self.product, self.error_description]
+        data = [self.case_id, self.product, self.case_title]
         self.send_email([self.tac1_id],data)
         self.state = 'tac1'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
@@ -304,7 +292,7 @@ class Case(models.Model):
             self.tac2_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.tac2_id.partner_id.id])
-        data = [self.case_title, self.product, self.error_description]
+        data = [self.case_id, self.product, self.case_title]
         self.send_email([self.tac2_id],data)
         self.state = 'tac2'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
@@ -321,7 +309,7 @@ class Case(models.Model):
             self.master_id = self.user_id
             # 添加任务处理人为关注者
             self.message_subscribe([self.master_id.partner_id.id])
-        data = [self.case_title, self.product, self.error_description]
+        data = [self.case_id, self.product, self.case_title]
         self.send_email([self.master_id],data)
         self.state = 'master'
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
@@ -339,7 +327,7 @@ class Case(models.Model):
         self.group_id = recs[0]
         self.user_id = self.tac1_id
         self.priority = "低优先级"
-        data = [self.case_title, self.product, self.error_description]
+        data = [self.case_id, self.product, self.case_title]
         self.send_email([self.tac1_id,data])
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id, 'case_id': self.id})
 
@@ -360,7 +348,7 @@ class Case(models.Model):
             self.state = 'customer_feedback'
             for feedback in self.feedback_ids:
                 self.user_id = feedback.processor_id
-            data = [self.case_title, self.product, self.error_description]
+            data = [self.case_id, self.product, self.case_title]
             self.send_email([self.tac1_id],data)
         
     @api.multi
@@ -427,7 +415,7 @@ class Case(models.Model):
         self.state = 'audit'
         self.product_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
         self.user_id = self.env['res.groups'].search([('name','=','product_manager_group')]).users[0]
-        data = [self.case_title, self.product, self.error_description]
+        data = [self.case_id, self.product, self.case_title]
         self.send_email([self.user_id],data)
 
     def create(self, cr, uid, vals, context=None):
@@ -436,12 +424,12 @@ class Case(models.Model):
         template_model = self.pool.get('server_desk.case')
         ids = template_model.search(cr,uid,[('case_id','like',date)],context=None)
         cases = template_model.browse(cr,uid,ids,context=None).sorted(key=lambda r: r.case_id)
-        temp = self.pool.get('res.groups')
-        temp_ids = temp.search(cr,uid,[('name','=','cds_group')],context=None)
-        temp_groups = self.pool.get('res.groups').search(cr,uid,[('users','like',uid)],context=None)
-        if temp_ids not in temp_groups:
-            user= self.pool.get('res.users').browse(cr,uid,uid,context=None)
-            vals['customer_id']=user[0].partner_id.id
+        # temp = self.pool.get('res.groups')
+        # temp_ids = temp.search(cr,uid,[('name','=','cds_group')],context=None)
+        # temp_groups = self.pool.get('res.groups').search(cr,uid,[('users','like',uid)],context=None)
+        # if temp_ids not in temp_groups:
+        #     user= self.pool.get('res.users').browse(cr,uid,uid,context=None)
+        #     vals['customer_id']=user[0].partner_id.id
         if vals['case_type'] == 'standby' and not vals['start_time'] and not vals['end_time']:
             raise exceptions.ValidationError('请填写case开始时间，结束时间，关闭时间')
 
