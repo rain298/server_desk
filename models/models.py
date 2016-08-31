@@ -218,7 +218,7 @@ class Case(models.Model):
                                 'a private email address. Only allowed people can contact us at this address.</p></div>'
                                 '<blockquote>%s</blockquote>' % template[0].body_html,
                             # 'subject': 'Re: %s+%s+%s' %(str(data[0]).decode('utf-8').encode('gbk'),str(data[1]).decode('utf-8').encode('gbk'),str(data[2]).decode('utf-8').encode('gbk')),
-                            'subject': 'data[0]'+'data[1]'+'data[2]',
+                            'subject': str(data[0])+str(data[1])+str(data[2]),
 
                              'email_to': to_list,
                             'auto_delete': True,
