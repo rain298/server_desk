@@ -189,9 +189,11 @@
         <menuitem id="solution_manage_menu" name="Solution Manage" parent="serverdesk_knowledge_menu" action="server_desk_solution_list_action"/>
         <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action" groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
 
-        <!-- the following menuitem should appear *after* its parent openacademy_menu and *after* its action course_list_action -->
-        <!-- <menuitem id="courses_menu" name="Courses" parent="openacademy_menu" action="server_desk_list_action"/> -->
-        <!-- Full id location:action="openacademy.course_list_action"It is not required when it is the same module -->
+
+
+        <menuitem id="nantian_MA_contract" name="nantian_MA_contract" parent="main_serverdesk_menu"/>
+        <menuitem name="MA_contract" id="MA_contract" sequence="5"  parent="nantian_MA_contract"  action="nantian_erp.nantian_MA_contract_view"/>
+
 
     </data>
 </openerp>
