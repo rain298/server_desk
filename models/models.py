@@ -126,6 +126,7 @@ class Case(models.Model):
     start_time =fields.Datetime(string="开始时间")
     end_time = fields.Datetime(string="结束时间")
     change_SN = fields.Char(string="新的SN")
+    is_oem = fields.Boolean(string="是否厂商处理")
     def pop_window(self, cr, uid, ids, context=None):
         mod_obj = self.pool.get('ir.model.data')
         form_res = mod_obj.get_object_reference(cr, uid, 'server_desk', 'case_change_SN_view')
@@ -324,6 +325,7 @@ class Case(models.Model):
             raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
         self.state = 'oem'
         recs = self.env['res.groups'].search([('name','=','tac1_group')])
+        self.is_oem = 'True'
         self.group_id = recs[0]
         self.user_id = self.tac1_id
         self.priority = "低优先级"
@@ -380,6 +382,7 @@ class Case(models.Model):
         if not self.judge_feedback():
             raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         self.state = 'oem'
+        self.is_oem = True
         self.user_id = self.tac1_id
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
 

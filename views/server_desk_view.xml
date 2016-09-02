@@ -22,6 +22,7 @@
                 <sheet>
                     <group>
                     <group>
+                        <field name="is_oem" invisible="True"></field>
                         <field name="case_title" groups="base.group_server_desk_admin,base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_master,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2"/>
                         <field name="applicant_id" string="申请人" readonly="True" />
                         <field name="applicant_way" string = "申请方式" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>
