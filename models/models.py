@@ -234,6 +234,7 @@ class Case(models.Model):
     def judge_deal(self):
         for feedback in self.feedback_ids:
             if feedback.processor_id == self.env.user and feedback.record:
+
                 return True
         return False
     @api.multi
@@ -283,8 +284,8 @@ class Case(models.Model):
 
     @api.multi
     def action_tac2(self):
-        if not self.judge_deal():
-            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+        if not self.judge_feedback():
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         recs = self.env['res.groups'].search([('name','=','tac2_group')])
         self.group_id = recs[0] 
         ### load balance the request to tac2 and achieve session hold
@@ -300,8 +301,8 @@ class Case(models.Model):
 
     @api.multi
     def action_master(self):
-        if not self.judge_deal():
-            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+        if not self.judge_feedback():
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         recs = self.env['res.groups'].search([('name','=','master_group')])
         self.group_id = recs[0]
         ### load balance the request to master and achieve session hold
@@ -321,16 +322,16 @@ class Case(models.Model):
         self.close_date = fields.datetime.now()
     @api.multi
     def action_oem(self):
-        if not self.judge_deal():
-            raise exceptions.ValidationError('转下一步前，请填写处理过程及记录')
+        if not self.judge_feedback():
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         self.state = 'oem'
         recs = self.env['res.groups'].search([('name','=','tac1_group')])
-        self.is_oem = 'True'
+        self.is_oem = True
         self.group_id = recs[0]
         self.user_id = self.tac1_id
         self.priority = "低优先级"
         data = [self.case_id, self.product, self.case_title]
-        self.send_email([self.tac1_id,data])
+        self.send_email([self.tac1_id],data)
         self.env['server_desk.feedback'].create({'processor_id': self.user_id.id, 'case_id': self.id})
 
 
