@@ -362,35 +362,57 @@
                 </tree>
             </field>
     </record>
-        <!--<record model="ir.ui.view" id="Solution_form_view">-->
-            <!--<field name="name">Solution.form</field>-->
-            <!--<field name="model">server_desk.solution</field>-->
-            <!--<field name="arch" type="xml">-->
-                <!--<form string="Solution">-->
-                <!--&lt;!&ndash;<notebook position="inside">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<page string="解决方案">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<group>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<field name="keyword" string = "关键字"/>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<field name="error_name" string = "故障分类"/>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<field name="solution" string = "解决方案"/>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</group>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</page>&ndash;&gt;-->
-                <!--&lt;!&ndash;</notebook>&ndash;&gt;-->
-                <!--</form>-->
-            <!--</field>-->
-        <!--</record>-->
 
-    <!--<record model="ir.ui.view" id="solution_tree_view">-->
-            <!--<field name="name">solution.tree</field>-->
-            <!--<field name="model">server_desk.solution</field>-->
-            <!--<field name="arch" type="xml">-->
-                <!--<tree string="Solution Tree">-->
-                    <!--&lt;!&ndash;<field name="keyword" string = "关键字"/>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<field name="error_description" string="故障描述" />&ndash;&gt;-->
-                    <!--&lt;!&ndash;<field name="solution" string = "解决方案"/>&ndash;&gt;-->
-                <!--</tree>-->
-            <!--</field>-->
-    <!--</record>-->
+    <record model="ir.ui.view" id="Solution_form_view">
+        <field name="name">Solution.form</field>
+        <field name="model">server_desk.solution</field>
+        <field name="arch" type="xml">
+            <form string="Solution">
+
+                    <group string="问题相关">
+                        <group >
+                            <field name="case_id" string = "case"/>
+                            <field name="keyword" string = "关键字"/>
+                            <field name="fault_type" string = "故障分类"/>
+                        </group>
+                        <group>
+                            <field name="equipment_type" string = "设备型号"/>
+                            <field name="platfrom" string = "平台"/>
+                            <field name="version" string = "软件版本"/>
+                        </group>
+                     </group>
+                    <group>
+                        <group string="问题分析">
+                            <field name="fault_symptom" string = "告警信息"/>
+                            <field name="fault_condition" string = "故障发生条件"/>
+                            <field name="fault_conclusion" string = "故障结论"/>
+                            <field name="cmd_list" string = "命令列表"/>
+                         </group>
+                        <group string="解决方案">
+                            <field name="workaround" string = "变通方案"/>
+                            <field name="solution" string = "解决方案"/>
+                        </group>
+                     </group>
+                  <group>
+                        <field name="counter" string = "counter()"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="solution_tree_view">
+            <field name="name">solution.tree</field>
+            <field name="model">server_desk.solution</field>
+            <field name="arch" type="xml">
+                <tree string="Solution Tree">
+                    <field name="keyword" string = "关键字"/>
+                    <field name="fault_type" string = "故障分类"/>
+                    <field name="equipment_type" string = "设备型号"/>
+                    <field name="platfrom" string = "平台"/>
+                    <field name="version" string = "软件版本"/>
+                </tree>
+            </field>
+    </record>
         <record model="ir.ui.view" id="Cco_form_view">
             <field name="name">Cco.form</field>
             <field name="model">server_desk.cco_account</field>

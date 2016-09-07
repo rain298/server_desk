@@ -325,6 +325,7 @@ class Case(models.Model):
     def action_done(self):
         self.state = 'done'
         self.close_date = fields.datetime.now()
+        self.env['server_desk.solution'].create({'case_id':self.id,'keyword':self.keyword,'fault_type':self.error_name.id,'equipment_type':self.product,'solution':self.solution ,'fault_symptom':self.error_description})
     @api.multi
     def action_oem(self):
         if not self.judge_feedback():
@@ -468,6 +469,20 @@ class Solution(models.Model):
     _name = 'server_desk.solution'
 
     case_id = fields.Many2one('server_desk.case')
+    keyword = fields.Char(string="关键字")
+    fault_type = fields.Many2one('server_desk.fault',string="故障类型")
+    #fault_type = fields.Selection([("硬件", "硬件"), ("软件", "软件"), ("配置", "配置"), ("其他", "其他")], string="问题类型")
+    equipment_type = fields.Char(string="设备型号")
+    platfrom = fields.Char(string="平台")
+    version = fields.Char(string="软件版本")
+    # keyword = fields.Text(string="告警信息")
+    fault_symptom = fields.Text(string="告警信息")
+    fault_condition = fields.Text(string="故障发生条件")
+    fault_conclusion = fields.Text(string="故障结论")
+    cmd_list = fields.Text(string="命令列表")
+    workaround = fields.Text(string="变通方案")
+    solution = fields.Text(string="解决方案")
+    counter = fields.Text(string="counter()")
 
 
 
