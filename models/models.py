@@ -285,7 +285,7 @@ class Case(models.Model):
         data = [self.case_id, self.product, self.case_title]
         self.send_email([self.tac1_id],data)
         self.state = 'tac1'
-        self.env['server_desk.feedback'].create({'processor_id': self.tac1_id.id,'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.tac1_id.id,'case_id': self.id,'state':self.state})
         self.user_id = self.tac1_id
 
     @api.multi
@@ -302,7 +302,7 @@ class Case(models.Model):
         data = [self.case_id, self.product, self.case_title]
         self.send_email([self.tac2_id],data)
         self.state = 'tac2'
-        self.env['server_desk.feedback'].create({'processor_id': self.tac2_id.id,'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.tac2_id.id,'case_id': self.id,'state':self.state})
         self.user_id = self.tac2_id
 
     @api.multi
@@ -319,7 +319,7 @@ class Case(models.Model):
         data = [self.case_id, self.product, self.case_title]
         self.send_email([self.master_id],data)
         self.state = 'master'
-        self.env['server_desk.feedback'].create({'processor_id': self.master_id.id,'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.master_id.id,'case_id': self.id,'state':self.state})
         self.user_id = self.master_id
     @api.multi
     def action_done(self):
@@ -337,7 +337,7 @@ class Case(models.Model):
         self.priority = "低优先级"
         data = [self.case_id, self.product, self.case_title]
         self.send_email([self.tac1_id],data)
-        self.env['server_desk.feedback'].create({'processor_id': self.tac1_id.id, 'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.tac1_id.id, 'case_id': self.id,'state':self.state})
         self.user_id = self.tac1_id
 
     @api.multi
@@ -360,7 +360,7 @@ class Case(models.Model):
         if not self.judge_feedback():
             raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         self.state = 'tac1'
-        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id,'state':self.state})
 
 
     @api.multi
@@ -368,7 +368,7 @@ class Case(models.Model):
         if not self.judge_feedback():
             raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         self.state = 'tac2'
-        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id,'state':self.state})
 
 
     @api.multi
@@ -376,7 +376,7 @@ class Case(models.Model):
         if not self.judge_feedback():
             raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         self.state = 'master'
-        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id,'state':self.state})
 
 
     @api.multi
@@ -385,7 +385,7 @@ class Case(models.Model):
             raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
         self.state = 'oem'
         self.is_oem = True
-        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id})
+        self.env['server_desk.feedback'].create({'processor_id': self.user_id.id,'case_id': self.id,'state':self.state})
 
 
     @api.multi
@@ -448,6 +448,7 @@ class Feedback(models.Model):
     note = fields.Text()
     case_id =  fields.Many2one('server_desk.case', string="case")
     feedback_time=fields.Datetime(string="反馈时间")
+    state = fields.Char(string='处理阶段')
     
     #@api.depends()
     @api.onchange('note','result')

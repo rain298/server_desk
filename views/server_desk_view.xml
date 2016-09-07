@@ -55,6 +55,7 @@
                             <field name="feedback_ids">
                                 <tree string="Registered feedback" editable="bottom" create="false">
                                     <field name="processor_id" string = "处理人" readonly = "True"/>
+                                    <field name="state" string="处理阶段" readonly="True"/>
                                     <field name = "record" string = "处理记录" attrs="{'editable':[('processor_id','=','uid'),('create_date','=',None)]}"/>
                                     <field name = "create_date" string = "处理时间" readonly = "True"/>
                                     <field name = "feedback_user_id" string = "反馈人" readonly="True"/>
@@ -127,6 +128,7 @@
                             <field name="feedback_ids" >
                                 <tree string="Registered feedback" editable="top">
                                     <field name="processor_id" string = "处理人" readonly = "True"/>
+                                    <field name="state" string="处理阶段" readonly="True"/>
                                     <field name = "record" string = "处理记录" attrs="{'editable':[('processor_id','=','uid'),('create_date','=',None)]}"/>
                                     <field name = "create_date" string = "处理时间" readonly = "True"/>
                                     <field name = "feedback_user_id" string = "反馈人" readonly="True"/>
@@ -198,6 +200,7 @@
                             <field name="feedback_ids" >
                                 <tree string="Registered feedback" editable="top">
                                     <field name="processor_id" string = "处理人" readonly = "True"/>
+                                    <field name="state" string="处理阶段" readonly="True"/>
                                     <field name = "record" string = "处理记录" attrs="{'editable':[('processor_id','=','uid'),('create_date','=',None)]}"/>
                                     <field name = "create_date" string = "处理时间" readonly = "True"/>
                                     <field name = "feedback_user_id" string = "反馈人" readonly="True"/>
