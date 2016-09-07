@@ -50,6 +50,22 @@ msgid "Solution Manage"
 msgstr "解决方案"
 
 #. module: server_desk
+#: model:ir.ui.menu,name:server_desk.fault_manage_menu
+msgid "fault manage"
+msgstr "故障管理"
+
+#. module: server_desk
+#: model:ir.ui.menu,name:server_desk.nantian_MA_contract
+msgid "nantian_MA_contract"
+msgstr "维保合同"
+
+#. module: server_desk
+#: model:ir.ui.menu,name:server_desk.MA_contract
+msgid "MA_contract"
+msgstr "南天维保合同"
+
+
+#. module: server_desk
 #: model:ir.actions.act_window,name:server_desk.server_desk_case_list_action
 msgid "Case"
 msgstr "所有的Case"
