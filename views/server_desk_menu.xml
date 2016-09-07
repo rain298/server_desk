@@ -24,6 +24,28 @@
             <field name="view_id" ref="case_form_view" />
             <field name="act_window_id" ref="server_desk_case_list_action" />
         </record>
+
+        <record model="ir.actions.act_window" id="server_desk_case_admin_list_action">
+            <field name="name">admin_Case</field>
+            <field name="res_model">server_desk.case</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first case
+                </p>
+            </field>
+        </record>
+        <record id="action_server_desk_admin_all_case_tree" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="case_tree_view" />
+            <field name="act_window_id" ref="server_desk_case_admin_list_action" />
+        </record>
+        <record id="action_server_desk_admin_all_case_form" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="case_admin_form_view" />
+            <field name="act_window_id" ref="server_desk_case_admin_list_action" />
+        </record>
+
         <record model="ir.actions.act_window" id="server_desk_pending_list_action">
             <field name="name">pending</field>
             <field name="res_model">server_desk.case</field>
@@ -95,19 +117,6 @@
             </field>
         </record>
 
-        <record model="ir.actions.act_window" id="server_desk_solution_list_action">
-            <field name="name">Solution</field>
-            <field name="res_model">server_desk.case</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[('keyword','!=',"")]</field>
-            <field name="view_id" ref="server_desk.solution_tree_view"/>
-            <field name="help" type="html">
-                <p class="oe_view_nocontent_create">Create the first solution
-                </p>
-            </field>
-        </record>
-
         <record model="ir.actions.act_window" id="server_desk_group_list_action">
             <field name="name">Group</field>
             <field name="res_model">res.groups</field>
@@ -158,6 +167,7 @@
             <field name ="domain">[('category','=','case客户')]</field>
             <!--<field name="view_id" ref="nantian_service_partner_form"/>-->
         </record>
+
         <record id="nantian_case_tree_partner_action" model="ir.actions.act_window.view">
             <field name="view_mode">tree</field>
             <field name="view_id" ref="base.view_partner_tree" />
@@ -168,26 +178,46 @@
             <field name="view_id" ref="nantian_case_partner_form" />
             <field name="act_window_id" ref="nantian_case_partner_action" />
         </record>
+         <record id="nantian_partner_case_partner_action" model="ir.actions.act_window">
+            <field name="name">service_partner.partner</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name ="domain">[('category','=','case客户'),('contact_users','ilike',uid)]</field>
+            <!--<field name="view_id" ref="nantian_service_partner_form"/>-->
+        </record>
+        <record id="nantian_partner_case_tree_partner_action" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="base.view_partner_tree" />
+            <field name="act_window_id" ref="nantian_partner_case_partner_action" />
+        </record>
+        <record id="nantian_partner_case_form_partner_action" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="nantian_case_partner_form" />
+            <field name="act_window_id" ref="nantian_partner_case_partner_action" />
+        </record>
         <!-- top level menu: no parent -->
         <menuitem id="main_serverdesk_menu" name="Server Desk"/>
         <!-- A first level in the left side menu is needed before using action= attribute -->
-        <menuitem id="serverdesk_case_menu" name="Case" parent="main_serverdesk_menu"/>
-        <menuitem id="serverdesk_manage_menu" name="Manage" parent="main_serverdesk_menu" groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
-        <menuitem id="serverdesk_knowledge_menu" name="Knowledge" parent="main_serverdesk_menu"  groups="base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master"/>
+        <menuitem id="serverdesk_case_menu" name="Case" parent="main_serverdesk_menu"  sequence="1"/>
+        <menuitem id="serverdesk_manage_menu" name="Manage" parent="main_serverdesk_menu" sequence="2" />
+        <menuitem id="serverdesk_knowledge_menu" name="Knowledge" parent="main_serverdesk_menu" sequence="3" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_product_manager"/>
         <!-- A second level in the left side menu is needed before using action= attribute -->
-        <menuitem id="all_case_menu" name="All Case" parent="serverdesk_case_menu" action="server_desk_case_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>
+        <menuitem id="all_case_menu" name="All Case" parent="serverdesk_case_menu" sequence="1" action="server_desk_case_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master"/>
+        <menuitem id="all_case_menu" name="All Case" parent="serverdesk_case_menu" sequence="2" action="server_desk_case_admin_list_action" groups="base.group_server_desk_admin"/>
         <menuitem id="my_case_menu" name="My Case" string="待处理" parent="serverdesk_case_menu" action="server_desk_pending_list_action"/>
         <menuitem id="deal_case_menu" name="Need Deal Case" string="已处理" parent="serverdesk_case_menu" action="server_desk_processed_case_list_action"/>
         <!--
         <menuitem id="partner_manage_menu" name="Partner Manage" parent="serverdesk_manage_menu" action="res_partner_activation_act"/>
         -->
-        <menuitem id="partner_manage_menu" name="Partner Manage" sequence="9" parent="serverdesk_manage_menu" action="nantian_case_partner_action"/>
-        <menuitem id="contract_manage_menu" name="Contract Manage" parent="serverdesk_manage_menu" action="server_desk_contract_list_action"/>
+        <menuitem id="partner_manage_menu" name="Partner Manage" sequence="9" parent="serverdesk_manage_menu" action="nantian_case_partner_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager,base.group_server_desk_admin"/>
+        <menuitem id="partner_partner_manage_menu" name="Partner Manage" sequence="9" parent="serverdesk_manage_menu" action="nantian_partner_case_partner_action" groups="base.group_server_desk_partner"/>
+        <menuitem id="contract_manage_menu" name="Contract Manage" parent="serverdesk_manage_menu" action="server_desk_contract_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager,base.group_server_desk_admin,base.group_server_desk_partner"/>
         <menuitem id="equipment_manage_menu" name="Equipment Manage" parent="serverdesk_manage_menu" action="server_desk_equipment_list_action"/>
-        <menuitem id="account_manage_menu" name="Account Manage" parent="serverdesk_manage_menu" action="server_desk_account_list_action"/>
-        <menuitem id="group_manage_menu" name="Group Manage" parent="serverdesk_manage_menu" action="server_desk_group_list_action"/>
-        <menuitem id="solution_manage_menu" name="Solution Manage" parent="serverdesk_knowledge_menu" action="server_desk_solution_list_action"/>
-        <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action" groups="base.group_server_desk_admin,base.group_server_desk_manager"/>
+        <menuitem id="account_manage_menu" name="Account Manage" parent="serverdesk_manage_menu" action="server_desk_account_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>
+        <menuitem id="group_manage_menu" name="Group Manage" parent="serverdesk_manage_menu" action="server_desk_group_list_action" groups="base.group_server_desk_admin"/>
+        <!--<menuitem id="solution_manage_menu" name="Solution Manage" parent="serverdesk_knowledge_menu" action="server_desk_solution_list_action" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_product_manager"/>-->
+        <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_product_manager"/>
 
         <!-- the following menuitem should appear *after* its parent openacademy_menu and *after* its action course_list_action -->
         <!-- <menuitem id="courses_menu" name="Courses" parent="openacademy_menu" action="server_desk_list_action"/> -->

@@ -71,6 +71,13 @@
                             <field name="solution" string = "解决方案"/>
                         </group>
                         </page>
+                        <page string="解决方案">
+                        <group>
+                            <field name="keyword" string = "关键字"/>
+                            <field name="error_name" string = "故障分类"/>
+                            <field name="solution" string = "解决方案"/>
+                        </group>
+                        </page>
                         <page string="备注">
                             <field name="note"/>
                         </page>
@@ -135,7 +142,13 @@
                                 </tree>
                             </field>
                         </page>
-
+                        <page string="解决方案">
+                            <group>
+                                <field name="keyword" string = "关键字"/>
+                                <field name="error_name" string = "故障分类"/>
+                                <field name="solution" string = "解决方案"/>
+                            </group>
+                        </page>
                         <page string="备注">
                             <field name="note"/>
                         </page>
@@ -148,7 +161,77 @@
             </form>
         </field>
     </record> 
+    <record model="ir.ui.view" id="case_admin_form_view">
+        <field name="name">admin_case.form</field>
+        <field name="model">server_desk.case</field>
+        <field name="arch" type="xml">
+            <form string="Case Form" create="false">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                    <group>
+                        <field name="case_title"/>
+                        <field name="applicant_id" string="申请人" />
+                        <field name="applicant_way" string = "申请方式" />
+                        <field name="contact_user" string = "故障联系人" />
+                        <field name="contact_user_phone" string = "联系电话" />
+                        <field name="SN_char" string = "SN"  invisible="True"/>
+                        <field name="SN" string = "SN" options='{"no_open":True,"no_create":1,"no_create_edit":1}' />
+                        <field name="customer_id" string = "客户" />
+                        <field name="contract_id" string = "合同号"/>
+                        <field name="product" string="产品型号"/>
+                        <field name="case_level" string = "case级别" />
+                        <field name="case_type" string = "case类型" />
+                        <!--<field name="case_type_note" string = "case类型说明" attrs="{'readonly':[('applicant_id','!=','uid'),('state','!=','new'),'|',('state','!=','cds')]}"/>-->
+                        <field name="case_oem_no" />
 
+                    </group>
+                    <group>
+                        <field name="create_date" string="创建时间" readonly = "True"/>
+                        <field name="write_date" string="更新时间" readonly = "True"/>
+                        <field name="close_date" string="关闭时间" />
+                        <field name="start_time" attrs="{'invisible':[('case_type','!=','standby')]}"/>
+                        <field name="end_time" attrs="{'invisible':[('case_type','!=','standby')]}"/>
+                    </group>
+                    </group>
+                    <notebook>
+                        <page string="故障描述">
+                            <field name="error_description" />
+                        </page>
+                        <page string="处理过程与客户反馈">
+                            <field name="feedback_ids" >
+                                <tree string="Registered feedback" editable="top">
+                                    <field name="processor_id" string = "处理人" readonly = "True"/>
+                                    <field name = "record" string = "处理记录" attrs="{'editable':[('processor_id','=','uid'),('create_date','=',None)]}"/>
+                                    <field name = "create_date" string = "处理时间" readonly = "True"/>
+                                    <field name = "feedback_user_id" string = "反馈人" readonly="True"/>
+                                    <field name = "result" string = "处理结果"  readonly="True"/>
+                                    <field name = "note" string = "反馈描述" readonly="True"/>
+                                    <field name = "feedback_time" string = "反馈时间" readonly="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="解决方案">
+                            <group>
+                                <field name="keyword" string = "关键字"/>
+                                <field name="error_name" string = "故障分类"/>
+                                <field name="solution" string = "解决方案"/>
+                            </group>
+                        </page>
+                        <page string="备注">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
 
     <record model="ir.ui.view" id="case_change_SN_view">
         <field name="name">log.form</field>
@@ -285,34 +368,35 @@
                 </tree>
             </field>
     </record>
-        <record model="ir.ui.view" id="Solution_form_view">
-            <field name="name">Solution.form</field>
-            <field name="model">server_desk.case</field>
-            <field name="inherit_id" ref="server_desk.case_form_view"/>
-            <field name="arch" type="xml">
-                <notebook position="inside">
-                    <page string="解决方案">
-                        <group>
-                            <field name="keyword" string = "关键字"/>
-                            <field name="error_name" string = "故障分类"/>
-                            <field name="solution" string = "解决方案"/>
-                        </group>
-                    </page>
-                </notebook>
-            </field>
-        </record>
+        <!--<record model="ir.ui.view" id="Solution_form_view">-->
+            <!--<field name="name">Solution.form</field>-->
+            <!--<field name="model">server_desk.solution</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<form string="Solution">-->
+                <!--&lt;!&ndash;<notebook position="inside">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<page string="解决方案">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<group>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<field name="keyword" string = "关键字"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<field name="error_name" string = "故障分类"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<field name="solution" string = "解决方案"/>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</group>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</page>&ndash;&gt;-->
+                <!--&lt;!&ndash;</notebook>&ndash;&gt;-->
+                <!--</form>-->
+            <!--</field>-->
+        <!--</record>-->
 
-    <record model="ir.ui.view" id="solution_tree_view">
-            <field name="name">solution.tree</field>
-            <field name="model">server_desk.case</field>
-            <field name="arch" type="xml">
-                <tree string="Solution Tree">
-                    <field name="keyword" string = "关键字"/>
-                    <field name="error_description" string="故障描述" />
-                    <field name="solution" string = "解决方案"/>
-                </tree>
-            </field>
-    </record>
+    <!--<record model="ir.ui.view" id="solution_tree_view">-->
+            <!--<field name="name">solution.tree</field>-->
+            <!--<field name="model">server_desk.solution</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<tree string="Solution Tree">-->
+                    <!--&lt;!&ndash;<field name="keyword" string = "关键字"/>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<field name="error_description" string="故障描述" />&ndash;&gt;-->
+                    <!--&lt;!&ndash;<field name="solution" string = "解决方案"/>&ndash;&gt;-->
+                <!--</tree>-->
+            <!--</field>-->
+    <!--</record>-->
         <record model="ir.ui.view" id="Cco_form_view">
             <field name="name">Cco.form</field>
             <field name="model">server_desk.cco_account</field>
@@ -443,7 +527,7 @@
                     </group>
 
                     <notebook colspan="4">
-                        <page string="Contacts" attrs="{'invisible': [('is_company','=',False), ('child_ids', '=', [])]}" autofocus="autofocus">
+                        <page string="子公司" attrs="{'invisible': [('is_company','=',False), ('child_ids', '=', [])]}" autofocus="autofocus">
                             <field name="child_ids" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_use_parent_address': True}">
                                 <kanban>
                                     <field name="color"/>
@@ -552,7 +636,9 @@
                         <page name='internal_notes' string="Internal Notes">
                             <field name="comment" placeholder="Put an internal note..."/>
                         </page>
-
+                        <page  string="联系人">
+                            <field name="contact_users"/>
+                        </page>
                     </notebook>
                 </sheet>
                 </form>
