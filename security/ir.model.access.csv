@@ -76,3 +76,7 @@ access_server_desk_solution8,server_desk_solution8,model_server_desk_solution,ba
 system_crw_all,system all,model_server_desk_system,,1,1,1,0
 log_all,log_all,model_server_desk_log,base.group_server_desk_cds,1,1,1,1
 res_groups_rw_manager,res_groups manager rw,base.model_res_groups,base.group_server_desk_admin,1,1,0,0
+
+MA_contract_manager,MA_contract manager,nantian_erp.model_nantian_erp_contract,base.group_server_desk_manager,1,1,1,0
+MA_contract_detail_manager,MA_contract_detail manager,nantian_erp.model_nantian_erp_detail,base.group_server_desk_manager,1,1,1,0
+MA_contract_collection_manager,MA_contract_collection manager,nantian_erp.model_nantian_erp_collection,base.group_server_desk_manager,1,1,1,0

@@ -213,7 +213,7 @@ class Case(models.Model):
                             'body_html': '<div><p>您好:</p>'
                                 '<p>这个case需要您处理,您可登录：<a href="http://123.56.147.94:8000">http://123.56.147.94:8000</a></p></div>',
                             # 'subject': 'Re: %s+%s+%s' %(str(data[0]).decode('utf-8').encode('gbk'),str(data[1]).decode('utf-8').encode('gbk'),str(data[2]).decode('utf-8').encode('gbk')),
-                            'subject': str(data[0])+','+str(data[1])+','+str(data[2]),
+                            'subject':data[0]+u','+data[1]+u','+data[2],
                              'email_to': to_list,
                             'auto_delete': True,
                         }, context=context)
