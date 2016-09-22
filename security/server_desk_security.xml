@@ -24,8 +24,14 @@
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="comment">the user will have an access to the human resources configuration as well as statistic reports.</field>
     </record>
-    <record id="base.group_server_desk_tac2" model="res.groups">
-        <field name="name">tac2_group</field>
+    <record id="base.group_server_desk_tac2_ACS_CDN" model="res.groups">
+        <field name="name">tac2_ACS_CDN_group</field>
+        <field name="category_id" ref="base.module_category_server_desk"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">the user will have an access to the human resources configuration as well as statistic reports.</field>
+    </record>
+    <record id="base.group_server_desk_tac2_switch_router" model="res.groups">
+        <field name="name">tac2_switch_router_group</field>
         <field name="category_id" ref="base.module_category_server_desk"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="comment">the user will have an access to the human resources configuration as well as statistic reports.</field>
@@ -81,7 +87,7 @@
     <record id="server_desk.case_read_rule" model="ir.rule">
         <field name="name">Case规则-读</field>
         <field name="model_id" ref="model_server_desk_case"/>
-        <field name="groups" eval="[(4,ref('base.group_server_desk_cds')),(4,ref('base.group_server_desk_tac1')),(4,ref('base.group_server_desk_tac2')),(4,ref('base.group_server_desk_master')),(4,ref('base.group_server_desk_admin')),(4,ref('base.group_server_desk_manager')),(4,ref('base.group_server_desk_product_manager'))]"/>
+        <field name="groups" eval="[(4,ref('base.group_server_desk_cds')),(4,ref('base.group_server_desk_tac1')),(4,ref('base.group_server_desk_tac2_ACS_CDN')),(4,ref('base.group_server_desk_tac2_switch_router')),(4,ref('base.group_server_desk_master')),(4,ref('base.group_server_desk_admin')),(4,ref('base.group_server_desk_manager')),(4,ref('base.group_server_desk_product_manager'))]"/>
         <field name="perm_write" eval="0"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_create" eval="0"/>
@@ -90,7 +96,7 @@
     <record id="server_desk.case_write_rule" model="ir.rule">
         <field name="name">Case规则-修改</field>
         <field name="model_id" ref="model_server_desk_case"/>
-        <field name="groups" eval="[(4,ref('base.group_server_desk_cds')),(4,ref('base.group_server_desk_tac1')),(4,ref('base.group_server_desk_partner')),(4,ref('base.group_server_desk_tac2')),(4,ref('base.group_server_desk_master')),(4,ref('base.group_server_desk_manager')),(4,ref('base.group_server_desk_product_manager'))]"/>
+        <field name="groups" eval="[(4,ref('base.group_server_desk_cds')),(4,ref('base.group_server_desk_tac1')),(4,ref('base.group_server_desk_partner')),(4,ref('base.group_server_desk_tac2_ACS_CDN')),(4,ref('base.group_server_desk_tac2_switch_router')),(4,ref('base.group_server_desk_master')),(4,ref('base.group_server_desk_manager')),(4,ref('base.group_server_desk_product_manager'))]"/>
         <field name="domain_force">[('user_id','=',user.id)]</field>
         <field name="perm_write" eval="1"/>
         <field name="perm_read" eval="0"/>

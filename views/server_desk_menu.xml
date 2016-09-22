@@ -204,14 +204,15 @@
 
             <!--<field name="view_id" ref="nantian_service_partner_form"/>-->
         </record>
+
         <!-- top level menu: no parent -->
         <menuitem id="main_serverdesk_menu" name="Server Desk"/>
         <!-- A first level in the left side menu is needed before using action= attribute -->
         <menuitem id="serverdesk_case_menu" name="Case" parent="main_serverdesk_menu"  sequence="1"/>
         <menuitem id="serverdesk_manage_menu" name="Manage" parent="main_serverdesk_menu" sequence="2" />
-        <menuitem id="serverdesk_knowledge_menu" name="Knowledge" parent="main_serverdesk_menu" sequence="3" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_product_manager"/>
+        <menuitem id="serverdesk_knowledge_menu" name="Knowledge" parent="main_serverdesk_menu" sequence="3" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2_ACS_CDN,base.group_server_desk_tac2_switch_router,base.group_server_desk_master,base.group_server_desk_product_manager"/>
         <!-- A second level in the left side menu is needed before using action= attribute -->
-        <menuitem id="all_case_menu" name="All Case" parent="serverdesk_case_menu" sequence="1" action="server_desk_case_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master"/>
+        <menuitem id="all_case_menu" name="All Case" parent="serverdesk_case_menu" sequence="1" action="server_desk_case_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager,base.group_server_desk_tac1,base.group_server_desk_tac2_ACS_CDN,base.group_server_desk_tac2_switch_router,base.group_server_desk_master,base.group_server_desk_partner"/>
         <menuitem id="all_admin_case_menu" name="All Case" parent="serverdesk_case_menu" sequence="2" action="server_desk_case_admin_list_action" groups="base.group_server_desk_admin"/>
         <menuitem id="my_case_menu" name="My Case" string="待处理" parent="serverdesk_case_menu" action="server_desk_pending_list_action"/>
         <menuitem id="deal_case_menu" name="Need Deal Case" string="已处理" parent="serverdesk_case_menu" action="server_desk_processed_case_list_action"/>
@@ -224,8 +225,8 @@
         <menuitem id="equipment_manage_menu" name="Equipment Manage" parent="serverdesk_manage_menu" action="server_desk_equipment_list_action"/>
         <menuitem id="account_manage_menu" name="Account Manage" parent="serverdesk_manage_menu" action="server_desk_account_list_action" groups="base.group_server_desk_cds,base.group_server_desk_manager,base.group_server_desk_product_manager"/>
         <menuitem id="group_manage_menu" name="Group Manage" parent="serverdesk_manage_menu" action="server_desk_group_list_action" groups="base.group_server_desk_admin"/>
-        <menuitem id="solution_manage_menu" name="Solution Manage" parent="serverdesk_knowledge_menu" action="server_desk_solution_list_action" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_product_manager"/>
-        <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2,base.group_server_desk_master,base.group_server_desk_product_manager"/>
+        <menuitem id="solution_manage_menu" name="Solution Manage" parent="serverdesk_knowledge_menu" action="server_desk_solution_list_action" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2_ACS_CDN,base.group_server_desk_tac2_switch_router,base.group_server_desk_master,base.group_server_desk_product_manager"/>
+        <menuitem id="fault_manage_menu" name="fault manage" parent="serverdesk_knowledge_menu" action="server_desk_error_list_action" groups="base.group_server_desk_cds,base.group_server_desk_admin,base.group_server_desk_manager,base.group_server_desk_tac1,base.group_server_desk_tac2_ACS_CDN,base.group_server_desk_tac2_switch_router,base.group_server_desk_master,base.group_server_desk_product_manager"/>
 
         <menuitem id="nantian_MA_contract" name="nantian_MA_contract" parent="main_serverdesk_menu" groups="base.group_server_desk_manager"/>
         <menuitem name="MA_contract" id="MA_contract" sequence="5"  parent="nantian_MA_contract"  action="nantian_erp.nantian_MA_contract_view"/>

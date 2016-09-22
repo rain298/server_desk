@@ -132,7 +132,8 @@ class Case(models.Model):
     error_name = fields.Many2one('server_desk.fault', string="error_name")
     device_id = fields.Many2one('server_desk.equipment', string="device")
     solution = fields.Text()
-
+    next_group = fields.Selection([('ACS\CDN',"ACS\CDN"),
+        (u'交换机\路由器',u"交换机\路由器"),])
     def pop_window(self, cr, uid, ids, context=None):
         mod_obj = self.pool.get('ir.model.data')
         form_res = mod_obj.get_object_reference(cr, uid, 'server_desk', 'case_change_SN_view')
@@ -152,7 +153,7 @@ class Case(models.Model):
 
         if SN_char:
             get_sn=self.env['server_desk.equipment'].search([('SN','=',SN_char)],limit=1)
-            if get_sn:
+            if get_sn and fields.Date.from_string(get_sn.end_date) >= fields.date.today():
                 result['value']['SN']=get_sn.id
                 return result
             else:
@@ -164,7 +165,7 @@ class Case(models.Model):
 
         if SN:
             get_sn = self.env['server_desk.equipment'].search([('id', '=', SN)], limit=1)
-            if get_sn:
+            if get_sn and fields.Date.from_string(get_sn.end_date) >= fields.date.today():
                 result['value']['SN_char'] = get_sn.SN
                 result['value']['customer_id'] = get_sn.customer.id
                 return result
@@ -208,7 +209,9 @@ class Case(models.Model):
             for user in users:
                 to_list.append(formataddr((Header(user.name,'utf-8').encode(),user.email)))
             mail_mail = self.pool.get('mail.mail')
-
+            for i in range(len(data)):
+                if not data[i]:
+                    data[i] = ''
             mail_id = mail_mail.create(cr, uid, {
                             'body_html': '<div><p>您好:</p>'
                                 '<p>这个case需要您处理,您可登录：<a href="http://123.56.147.94:8000">http://123.56.147.94:8000</a></p></div>',
@@ -292,13 +295,21 @@ class Case(models.Model):
     def action_tac2(self):
         if not self.judge_feedback():
             raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
-        recs = self.env['res.groups'].search([('name','=','tac2_group')])
+        if not self.next_group:
+            raise exceptions.ValidationError('转下一步前，请选择处理组')
+        elif self.next_group == 'ACS\CDN':
+            recs = self.env['res.groups'].search([('name','=','tac2_ACS_CDN_group')])
+        elif self.next_group == '交换机\路由器':
+            recs = self.env['res.groups'].search([('name', '=', 'tac2_switch_router_group')])
         self.group_id = recs[0] 
         ### load balance the request to tac2 and achieve session hold
         if not self.tac2_id:
-            self.tac2_id = self._load_balance('tac2_group')
+            self.tac2_id = self._load_balance(recs[0].name)
             # 添加任务处理人为关注者
             self.message_subscribe([self.tac2_id.partner_id.id])
+        if not self.next_group:
+            raise exceptions.ValidationError('转下一步前，请填写处理结果及反馈描述')
+
         data = [self.case_id, self.product, self.case_title]
         self.send_email([self.tac2_id],data)
         self.state = 'tac2'
@@ -423,6 +434,19 @@ class Case(models.Model):
         self.send_email([self.user_id],data)
         self.user_id = self.env['res.groups'].search([('name', '=', 'product_manager_group')]).users[0]
 
+    @api.one
+    @api.constrains('SN', 'SN_char')
+    def _check_SN(self):
+        if self.SN:
+            get_sn = self.env['server_desk.equipment'].search([('id', '=',self.SN.id)], limit=1)
+            if get_sn and fields.Date.from_string(get_sn.end_date) < fields.date.today():
+                raise exceptions.ValidationError('SN号不存在或已过保')
+        if self.SN_char:
+            get_sn = self.env['server_desk.equipment'].search([('SN', '=', self.SN_char)], limit=1)
+            if get_sn and fields.Date.from_string(get_sn.end_date) < fields.date.today():
+                raise exceptions.ValidationError('SN号不存在或已过保')
+
+
     def create(self, cr, uid, vals, context=None):
         dates= fields.Date.today().split('-')
         date = ''.join(dates)
@@ -431,7 +455,6 @@ class Case(models.Model):
         cases = template_model.browse(cr,uid,ids,context=None).sorted(key=lambda r: r.case_id)
         if vals['case_type'] == 'standby' and not vals['start_time'] and not vals['end_time']:
             raise exceptions.ValidationError('请填写case开始时间，结束时间，关闭时间')
-
         if len(cases):
             vals['case_id']='C'+str(int(cases[-1].case_id[1:])+1)
         else:
@@ -469,6 +492,7 @@ class Fault(models.Model):
 class Solution(models.Model):
     _name = 'server_desk.solution'
 
+    name = fields.Char(string="解决方案编号",readonly='True')
     case_id = fields.Many2one('server_desk.case')
     keyword = fields.Char(string="关键字")
     fault_type = fields.Many2one('server_desk.fault',string="故障类型")
@@ -485,6 +509,11 @@ class Solution(models.Model):
     solution = fields.Text(string="解决方案")
     counter = fields.Text(string="counter()")
 
+    def create(self, cr, uid, vals, context=None):
+        vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'server_desk.solution')
+        return super(Solution, self).create(cr, uid, vals, context=context)
+
+
 
 
 class System(models.Model):
@@ -492,7 +521,8 @@ class System(models.Model):
 
     name = fields.Char()
     tac1_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','tac1_group')]).users))
-    tac2_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','tac2_group')]).users))
+    tac2_ACS_CDN_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','tac2_ACS\CDN_group')]).users))
+    tac2_switch_router_group =fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','tac2_switch_router_group')]).users))
     master_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','master_group')]).users))
     cds_group = fields.Integer(default=lambda self:len(self.env['res.groups'].search([('name','=','cds_group')]).users))
 
@@ -514,6 +544,3 @@ class log(models.Model):
 class res_partner(models.Model):
     _inherit = 'res.partner'
     contact_users = fields.Many2many('res.users',string="联系人")
-
-
-
