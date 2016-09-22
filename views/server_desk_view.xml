@@ -372,7 +372,6 @@
         <field name="model">server_desk.solution</field>
         <field name="arch" type="xml">
             <form string="Solution">
-
                     <group string="问题相关">
                         <group >
                             <field name="case_id" string = "case"/>
