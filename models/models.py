@@ -25,7 +25,7 @@ class equipment(models.Model):
     contract = fields.Many2one('server_desk.contract', string="CONTRACT NUMBER") #合同号
     server_level = fields.Char(string="SERVICE LEVEL") #服务级别
     company = fields.Char(string="BILL TO NAME") #公司名称
-    customer = fields.Many2one('res.partner',string="SITE NAME") #客户名称
+    customer = fields.Many2one('res.partner',string="SITE NAME" ,domain=[('category','=',u'case客户')]) #客户名称
     product = fields.Char(string="PRODUCT NUMBER") #产品型号
     product_relationship = fields.Char(string="PRODUCT RELATIONSHIP") #产品相互关系
     description  = fields.Char(string="DESCRIPTION") #产品描述
