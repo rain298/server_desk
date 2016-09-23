@@ -54,7 +54,7 @@ class Contract(models.Model):
     srv_req = fields.Char(string="Service Request Management")
     locked = fields.Char(string="Locked")
     site_name = fields.Char(string="Installed-At Site Name ")
-    partner_id = fields.Many2many('res.partner', string="客户")
+    partner_id = fields.Many2many('res.partner', string="客户", domain=[('category','=',u'case客户')])
     equipment_ids = fields.One2many('server_desk.equipment','contract',string="设备")
 
     @api.multi
