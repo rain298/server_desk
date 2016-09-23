@@ -60,14 +60,16 @@ class Contract(models.Model):
     @api.multi
     @api.depends('equipment_ids')
     def _count_time(self):
+
         for record in self:
-            record.start_time = record.equipment_ids[0].begin_date
-            record.stop_time = record.equipment_ids[0].end_date
-            for equipment in record.equipment_ids:
-                if record.start_time > equipment.begin_date:
-                    record.start_time = equipment.begin_date
-                if record.stop_time < equipment.end_date:
-                    record.stop_time=equipment.end_date
+            if len(record.equipment_ids):
+                record.start_time = record.equipment_ids[0].begin_date
+                record.stop_time = record.equipment_ids[0].end_date
+                for equipment in record.equipment_ids:
+                    if record.start_time > equipment.begin_date:
+                        record.start_time = equipment.begin_date
+                    if record.stop_time < equipment.end_date:
+                        record.stop_time=equipment.end_date
 
 
 class Case(models.Model):
