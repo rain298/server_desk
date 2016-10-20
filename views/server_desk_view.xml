@@ -282,18 +282,24 @@
                 <form string="contract Form">
                     <sheet>
                         <group>
-                            <field name="contract_id" string = "合同号"/>
-                            <field name="start_time" string = "合同开始日期"/>
-                            <field name="stop_time" string = "合同截止日期"/>
-                            <field name="bill2id" />
-                            <field name="contract_type" string = "合同级别"/>
-                            <field name="access_level" string = "合同类型"/>
-                            <field name="software_download" />
-                             <field name="srv_req" />
-                             <field name="locked"/>
-                             <field name="site_name" />
-                            <field name="sow" string = "sow"/>
-                            <field name="serivce_level" string = "服务级别"/>
+                            <group>
+                                <field name="contract_id" string = "合同号"/>
+                                <field name="start_time" string = "合同开始日期"/>
+                                <field name="stop_time" string = "合同截止日期"/>
+                                <field name="bill2id" />
+                                <field name="contract_type" string = "合同级别"/>
+                                <field name="access_level" string = "合同类型"/>
+                                <button name="%(server_desk_equimpment_link_view)d" type="action" string="设备"   class="look_equipment"/>
+
+                            </group>
+                            <group>
+                                <field name="software_download" />
+                                 <field name="srv_req" />
+                                 <field name="locked"/>
+                                 <field name="site_name" />
+                                <field name="sow" string = "sow"/>
+                                <field name="serivce_level" string = "服务级别"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string ="客户">

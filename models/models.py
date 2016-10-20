@@ -338,7 +338,8 @@ class Case(models.Model):
     def action_done(self):
         self.state = 'done'
         self.close_date = fields.datetime.now()
-        self.env['server_desk.solution'].create({'case_id':self.id,'keyword':self.keyword,'fault_type':self.error_name.id,'equipment_type':self.product,'solution':self.solution ,'fault_symptom':self.error_description})
+        if self.case_type != 'standby':
+            self.env['server_desk.solution'].create({'case_id':self.id,'keyword':self.keyword,'fault_type':self.error_name.id,'equipment_type':self.product,'solution':self.solution ,'fault_symptom':self.error_description})
     @api.multi
     def action_oem(self):
         if not self.judge_feedback():
