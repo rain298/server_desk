@@ -301,7 +301,7 @@ class Case(models.Model):
             raise exceptions.ValidationError('转下一步前，请选择处理组')
         elif self.next_group == 'ACS\CDN':
             recs = self.env['res.groups'].search([('name','=','tac2_ACS_CDN_group')])
-        elif self.next_group == '交换机\路由器':
+        elif self.next_group == u'交换机\路由器':
             recs = self.env['res.groups'].search([('name', '=', 'tac2_switch_router_group')])
         self.group_id = recs[0] 
         ### load balance the request to tac2 and achieve session hold
